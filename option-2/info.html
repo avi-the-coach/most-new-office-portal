@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מאגר מידע — פורטל עובדים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f0f2f5; --card:#fff; --topbar-bg:#fff; --nav-bg:#0e4d9b;
+  --border:#dde1e7; --accent:#0e4d9b; --accent-light:#e8effa;
+  --text1:#1a2b4a; --text2:#5a6474; --text3:#9ca3af;
+  --success:#10b981; --warning:#f59e0b; --danger:#ef4444;
+  --radius:6px; --shadow:0 1px 3px rgba(0,0,0,0.08);
+  --bg3: #edf0f5;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Heebo',sans-serif; background:var(--bg); color:var(--text1); direction:rtl; min-height:100vh; }
+.portal-header { position:sticky; top:0; z-index:100; }
+.topbar { background:var(--topbar-bg); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; padding:0 20px; height:56px; box-shadow:var(--shadow); }
+.topbar-logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.logo-icon { width:36px; height:36px; border-radius:4px; background:#0e4d9b; display:grid; place-items:center; font-size:18px; color:#fff; }
+.logo-text { font-size:14px; font-weight:800; color:var(--accent); }
+.logo-sub { font-size:10px; color:var(--text2); }
+.topbar-divider { width:1px; height:32px; background:var(--border); flex-shrink:0; }
+.topbar-search { flex:1; max-width:340px; position:relative; }
+.topbar-search input { width:100%; background:#f8f9fb; border:1px solid var(--border); border-radius:20px; padding:7px 36px 7px 14px; color:var(--text1); font-size:13px; font-family:inherit; direction:rtl; }
+.topbar-search input:focus { outline:none; border-color:var(--accent); background:#fff; }
+.topbar-search input::placeholder { color:var(--text3); }
+.topbar-search .search-icon { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text3); font-size:13px; pointer-events:none; }
+.topbar-actions { margin-right:auto; display:flex; align-items:center; gap:8px; }
+.topbar-icon-btn { width:34px; height:34px; border-radius:50%; border:none; background:transparent; color:var(--text2); cursor:pointer; display:grid; place-items:center; font-size:16px; position:relative; }
+.topbar-icon-btn:hover { background:var(--bg); color:var(--accent); }
+.badge { position:absolute; top:0; right:0; width:15px; height:15px; background:var(--danger); border-radius:50%; font-size:8px; font-weight:700; display:grid; place-items:center; color:#fff; border:2px solid #fff; }
+.topbar-user { display:flex; align-items:center; gap:8px; cursor:pointer; padding:5px 10px; border-radius:20px; }
+.topbar-user:hover { background:var(--bg); }
+.user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#0e4d9b,#1565c0); display:grid; place-items:center; font-size:13px; font-weight:700; color:#fff; flex-shrink:0; }
+.topnav { background:var(--nav-bg); }
+.topnav-inner { max-width:1200px; margin:0 auto; padding:0 20px; display:flex; }
+.topnav-link { display:inline-flex; align-items:center; gap:6px; padding:11px 16px; color:rgba(255,255,255,0.8); text-decoration:none; font-size:13px; font-weight:600; border-bottom:3px solid transparent; transition:all 0.15s; white-space:nowrap; }
+.topnav-link:hover { color:#fff; background:rgba(255,255,255,0.1); }
+.topnav-link.active { color:#fff; border-bottom-color:#fff; background:rgba(255,255,255,0.12); }
+.main { padding:24px 20px; }
+.content-wrap { max-width:1200px; margin:0 auto; }
+
+.page-hero { background:var(--nav-bg); border-radius:var(--radius); padding:28px 32px; margin-bottom:24px; position:relative; overflow:hidden; }
+.page-hero::after { content:'📚'; position:absolute; left:24px; top:50%; transform:translateY(-50%); font-size:80px; opacity:0.06; }
+.page-hero h1 { font-size:24px; font-weight:800; color:#fff; margin-bottom:6px; }
+.page-hero p { font-size:14px; color:rgba(255,255,255,0.8); max-width:500px; }
+.hero-search { margin-top:16px; display:flex; gap:10px; max-width:520px; }
+.hero-search input { flex:1; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3); border-radius:4px; padding:10px 16px; color:#fff; font-size:14px; font-family:inherit; direction:rtl; }
+.hero-search input::placeholder { color:rgba(255,255,255,0.6); }
+.hero-search input:focus { outline:none; background:rgba(255,255,255,0.2); }
+.btn { display:inline-flex; align-items:center; gap:6px; padding:10px 20px; border-radius:4px; font-size:13.5px; font-weight:600; cursor:pointer; font-family:inherit; border:none; transition:all 0.2s; text-decoration:none; }
+.btn-primary { background:#fff; color:var(--accent); }
+.btn-primary:hover { background:rgba(255,255,255,0.9); }
+
+.section-title { font-size:15px; font-weight:700; color:var(--text1); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.section-title::before { content:''; display:inline-block; width:4px; height:16px; background:var(--accent); border-radius:2px; }
+
+.categories-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; margin-bottom:28px; }
+.cat-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:12px; box-shadow:var(--shadow); }
+.cat-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 3px 10px rgba(14,77,155,0.1); }
+.cat-icon { width:40px; height:40px; border-radius:var(--radius); display:grid; place-items:center; font-size:18px; flex-shrink:0; }
+.cat-name { font-size:13.5px; font-weight:700; color:var(--text1); }
+.cat-count { font-size:11px; color:var(--text2); margin-top:2px; }
+
+.info-grid { display:grid; grid-template-columns:1fr 280px; gap:20px; }
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.docs-count { font-size:13px; color:var(--text2); }
+.docs-list { display:flex; flex-direction:column; gap:8px; }
+.doc-item { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:12px 16px; display:flex; align-items:center; gap:14px; cursor:pointer; transition:all 0.2s; box-shadow:var(--shadow); }
+.doc-item:hover { border-color:var(--accent); box-shadow:0 2px 8px rgba(14,77,155,0.1); }
+.doc-icon { font-size:22px; flex-shrink:0; }
+.doc-info { flex:1; }
+.doc-title { font-size:14px; font-weight:600; color:var(--text1); }
+.doc-meta { display:flex; gap:10px; margin-top:4px; }
+.doc-cat { font-size:11px; color:var(--accent); background:var(--accent-light); padding:2px 8px; border-radius:10px; }
+.doc-date { font-size:11px; color:var(--text3); }
+.doc-reads { font-size:11px; color:var(--text3); }
+.doc-arrow { color:var(--text3); font-size:14px; }
+
+.widget { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; margin-bottom:12px; box-shadow:var(--shadow); }
+.widget-title { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:12px; }
+.popular-item { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+.popular-item:last-child { border-bottom:none; }
+.pop-num { font-size:20px; font-weight:800; color:var(--border); min-width:24px; }
+.pop-title { font-size:13px; color:var(--text1); flex:1; }
+.pop-reads { font-size:11px; color:var(--text3); }
+@media(max-width:1024px) { .info-grid { grid-template-columns:1fr; } }
+
+/* ── DARK MODE override for option-2 ── */
+html:not(.light-mode) {
+  --bg: #0f1117;
+  --card: #1a1f2e;
+  --topbar-bg: #13182a;
+  --nav-bg: #0a3270;
+  --border: #27334d;
+  --accent: #4d8ef0;
+  --accent-light: rgba(77,142,240,0.12);
+  --text1: #e8edf8;
+  --text2: #8fa3c8;
+  --text3: #4a6080;
+  --bg3: #1e2535;
+  --shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+html:not(.light-mode) .topbar { background: var(--topbar-bg) !important; border-bottom-color: var(--border) !important; }
+html:not(.light-mode) .topnav { background: var(--nav-bg) !important; }
+html:not(.light-mode) .topbar-search input { background: var(--bg3) !important; color: var(--text1) !important; border-color: var(--border) !important; }
+html:not(.light-mode) .topbar-search input::placeholder { color: var(--text3) !important; }</style>
+<link rel="stylesheet" href="../shared/theme.css">
+</head>
+<body>
+<div class="portal-header">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">🏛️</div>
+      <div><div class="logo-text">פורטל עובדים</div><div class="logo-sub">משרד החדשנות, המדע והטכנולוגיה</div></div>
+    </div>
+    <div class="topbar-divider"></div>
+    <div class="topbar-search"><span class="search-icon">🔍</span><input type="text" placeholder="חיפוש..."></div>
+    <div id="option-switcher-mount"></div>
+    <div class="topbar-actions">
+      <div id="discover-mount"></div>
+      <div id="theme-toggle-mount"></div>
+      <div id="walkme-trigger-mount"></div>
+      <div class="topbar-icon-btn">🔔<span class="badge">7</span></div>
+      <div class="topbar-user"><div class="user-avatar" id="user-av"></div><div style="font-size:13px;font-weight:600" id="user-nm"></div><div style="font-size:11px;color:var(--text2)" id="user-rl"></div></div>
+    </div>
+  </div>
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <a class="topnav-link" href="index.html"><span>🏠</span> דף הבית</a>
+      <a class="topnav-link" href="announcements.html"><span>📣</span> עדכונים</a>
+      <a class="topnav-link" href="events.html"><span>📅</span> אירועים</a>
+      <a class="topnav-link active" href="info.html"><span>📚</span> מאגר מידע</a>
+      <a class="topnav-link" href="contacts.html"><span>👤</span> ספר טלפונים</a>
+      <a class="topnav-link" href="report.html"><span>📝</span> דיווח ובקשות</a>
+    </div>
+  </nav>
+</div>
+<main class="main">
+  <div class="content-wrap">
+    <div class="page-hero">
+      <h1>📚 מאגר מידע</h1>
+      <p>נהלים, הדרכות, מדריכים וטפסים — כל המידע הארגוני במקום אחד</p>
+      <div class="hero-search">
+        <input type="text" id="doc-search" placeholder="חיפוש בין מסמכים ונהלים...">
+        <button class="btn btn-primary">חיפוש</button>
+      </div>
+    </div>
+    <div class="section-title">קטגוריות</div>
+    <div class="categories-grid" id="cats-grid"></div>
+    <div class="info-grid">
+      <div>
+        <div class="section-header">
+          <div class="section-title" style="margin:0">מסמכים וקבצים</div>
+          <span class="docs-count" id="docs-count"></span>
+        </div>
+        <div class="docs-list" id="docs-list"></div>
+      </div>
+      <div>
+        <div class="widget"><div class="widget-title">🔥 הנצפים ביותר</div><div id="popular-list"></div></div>
+        <div class="widget"><div class="widget-title">🕐 עודכנו לאחרונה</div><div id="recent-list"></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="../shared/data.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+const d = PortalData;
+document.getElementById('user-av').textContent = d.user.firstName[0];
+document.getElementById('user-nm').textContent = d.user.name;
+document.getElementById('user-rl').textContent = d.user.role;
+
+const cg = document.getElementById('cats-grid');
+d.knowledgeCategories.forEach(c => {
+  cg.innerHTML += `<div class="cat-card" onclick="filterDocs('${c.name}')" style="border-top:3px solid ${c.color}">
+    <div class="cat-icon" style="background:${c.color}18">${c.icon}</div>
+    <div><div class="cat-name">${c.name}</div><div class="cat-count">${c.count} מסמכים</div></div>
+  </div>`;
+});
+
+let currentFilter = null;
+function renderDocs(filter) {
+  const list = document.getElementById('docs-list');
+  const items = filter ? d.knowledgeBase.filter(x => x.category === filter) : d.knowledgeBase;
+  document.getElementById('docs-count').textContent = `${items.length} מסמכים`;
+  list.innerHTML = items.map(doc => `<div class="doc-item">
+    <div class="doc-icon">${doc.icon}</div>
+    <div class="doc-info">
+      <div class="doc-title">${doc.title}</div>
+      <div class="doc-meta">
+        <span class="doc-cat">${doc.category}</span>
+        <span class="doc-date">עודכן: ${doc.updated}</span>
+        <span class="doc-reads">👁 ${doc.reads}</span>
+      </div>
+    </div>
+    <span class="doc-arrow">←</span>
+  </div>`).join('');
+}
+function filterDocs(cat) { renderDocs(cat); }
+renderDocs(null);
+
+const sorted = [...d.knowledgeBase].sort((a,b) => b.reads - a.reads);
+const pop = document.getElementById('popular-list');
+sorted.slice(0,4).forEach((doc, i) => {
+  pop.innerHTML += `<div class="popular-item"><span class="pop-num">${i+1}</span><span class="pop-title">${doc.title}</span><span class="pop-reads">${doc.reads}</span></div>`;
+});
+
+const recent = [...d.knowledgeBase].sort((a,b) => new Date(b.updated) - new Date(a.updated));
+const recEl = document.getElementById('recent-list');
+recent.slice(0,4).forEach(doc => {
+  recEl.innerHTML += `<div class="popular-item"><span style="font-size:16px">${doc.icon}</span><div style="flex:1"><div class="pop-title">${doc.title}</div><div class="pop-reads">${doc.updated}</div></div></div>`;
+});
+
+const walkme = new WalkMe([
+  { target: '.hero-search', title: 'חיפוש מסמכים', text: 'חפשו לפי שם מסמך או קטגוריה.' },
+  { target: '.categories-grid', title: 'קטגוריות', text: 'לחצו על קטגוריה לסינון המסמכים.' },
+  { target: '.docs-list', title: 'מסמכים', text: 'כל מסמך מציג שם, קטגוריה, תאריך עדכון וצפיות.' },
+  { target: '#popular-list', title: 'הנצפים ביותר', text: 'המסמכים הפופולריים ביותר בפורטל.' }
+], { accent:'#0e4d9b', bg:'#fff', border:'#dde1e7', textPrimary:'#1a2b4a', textSecondary:'#5a6474' });
+document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
+
+document.getElementById('doc-search').addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  const items = q ? d.knowledgeBase.filter(x => x.title.toLowerCase().includes(q) || x.category.toLowerCase().includes(q)) : d.knowledgeBase;
+  document.getElementById('docs-count').textContent = `${items.length} מסמכים`;
+  document.getElementById('docs-list').innerHTML = items.map(doc => `<div class="doc-item">
+    <div class="doc-icon">${doc.icon}</div>
+    <div class="doc-info"><div class="doc-title">${doc.title}</div>
+    <div class="doc-meta"><span class="doc-cat">${doc.category}</span><span class="doc-date">עודכן: ${doc.updated}</span><span class="doc-reads">👁 ${doc.reads}</span></div></div>
+    <span class="doc-arrow">←</span></div>`).join('');
+});
+</script>
+<script src="../shared/theme.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+</body>
+</html>

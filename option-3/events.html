@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>פורטל עובדים — אירועים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/option-3.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+/* mini calendar */
+.mini-cal { font-size:13px; }
+.cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.cal-month { font-size:15px; font-weight:800; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center; }
+.cal-day-name { font-size:10px; color:var(--text3); padding:4px 0; }
+.cal-day { width:30px; height:30px; border-radius:8px; display:grid; place-items:center; font-size:12px; font-weight:600; cursor:default; margin:auto; }
+.cal-day.today  { background:var(--accent); color:#fff; }
+.cal-day.has-event { outline:2px solid rgba(167,139,250,0.4); }
+.cal-day.empty  { visibility:hidden; }
+.cal-day:hover  { background:var(--glass-hov); }
+
+/* timeline event */
+.timeline-item {
+  display:flex; gap:14px; padding:10px 0;
+  border-bottom:1px solid var(--glass-b); align-items:flex-start;
+}
+.timeline-item:last-child { border-bottom:none; }
+.tl-line { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+.tl-dot  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.tl-bar  { width:2px; flex:1; background:var(--glass-b); margin-top:4px; }
+.tl-info { flex:1; }
+.tl-date { font-size:11px; color:var(--text3); margin-bottom:3px; }
+.tl-title { font-size:14px; font-weight:700; }
+.tl-sub   { font-size:11px; color:var(--text2); margin-top:3px; }
+
+/* legend */
+.legend-item { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid var(--glass-b); }
+.legend-item:last-child { border-bottom:none; }
+.legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.legend-label { font-size:13px; font-weight:600; }
+.legend-count { font-size:11px; color:var(--text2); margin-right:auto; }
+</style>
+</head>
+<body>
+
+<script>(function(){var t;try{t=localStorage.getItem('portal-theme');}catch(e){}if(!t)try{t=new URLSearchParams(window.location.search).get('t');}catch(e){}if(t==='light')document.documentElement.classList.add('light-mode');})();</script>
+
+<nav class="icon-dock">
+  <div class="dock-logo">🏛️</div>
+  <a class="dock-item"        href="index.html"         data-label="דף הבית">🏠</a>
+  <a class="dock-item"        href="announcements.html" data-label="עדכונים">📢</a>
+  <a class="dock-item active" href="events.html"        data-label="אירועים">📅</a>
+  <a class="dock-item"        href="info.html"          data-label="מאגר מידע">📚</a>
+  <a class="dock-item"        href="contacts.html"      data-label="ספר טלפונים">👥</a>
+  <a class="dock-item"        href="report.html"        data-label="דיווח ובקשות">📝</a>
+  <div class="dock-sep"></div>
+  <div class="dock-bottom"><div class="dock-user-av">י</div></div>
+</nav>
+
+<main class="bento-main">
+  <header class="command-bar">
+    <div class="cb-search"><span class="si">🔍</span><input type="text" placeholder="חיפוש אירועים..."></div>
+    <div id="option-switcher-mount"></div>
+    <div id="discover-mount"></div>
+    <div id="walkme-trigger-mount"></div>
+    <div id="theme-toggle-mount"></div>
+  </header>
+
+  <div class="bento-grid">
+
+    <!-- MINI CALENDAR  (2) -->
+    <div class="bc bc-2" id="calCard">
+      <div class="card-hdr"><span class="card-ttl">📅 מרץ 2026</span></div>
+      <div class="mini-cal" id="calGrid"></div>
+    </div>
+
+    <!-- TIMELINE  (3) -->
+    <div class="bc bc-3" style="overflow:hidden;">
+      <div class="card-hdr">
+        <span class="card-ttl">⏱️ ציר זמן</span>
+        <span class="card-badge" id="evCount">0</span>
+      </div>
+      <div class="scroll-inner" style="max-height:340px;" id="timeline"></div>
+    </div>
+
+    <!-- LEGEND  (1) -->
+    <div class="bc bc-1">
+      <div class="card-hdr"><span class="card-ttl">מקרא</span></div>
+      <div id="legend"></div>
+    </div>
+
+    <!-- EVENTS CARDS GRID  (6) -->
+    <div class="bc bc-6">
+      <div class="card-hdr"><span class="card-ttl">📋 כל האירועים</span></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" id="allEvents"></div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/store.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var D = PortalData;
+  var mon3  = ['ינו','פבר','מרץ','אפר','מאי','יוני','יולי','אוג','ספט','אוק','נוב','דצמ'];
+  var typeColors  = { meeting:'#67e8f9', training:'#34d399', deadline:'#f87171', holiday:'#fbbf24', event:'#a78bfa' };
+  var typeLabels  = { meeting:'ישיבה',   training:'הדרכה',   deadline:'דד-ליין', holiday:'חג',     event:'אירוע' };
+
+  // Mini calendar
+  var now = new Date(2026, 2, 16); // March 2026
+  var first = new Date(2026, 2, 1).getDay(); // 0=sun
+  var daysInMonth = 31;
+  var eventDays = {};
+  D.events.forEach(function (e) {
+    var d = new Date(e.date);
+    if (d.getMonth() === 2 && d.getFullYear() === 2026) eventDays[d.getDate()] = true;
+  });
+  var dayNames = ['א','ב','ג','ד','ה','ו','ש'];
+  var calHtml = '<div class="cal-grid">' + dayNames.map(function (d) { return '<div class="cal-day-name">' + d + '</div>'; }).join('');
+  for (var i = 0; i < first; i++) calHtml += '<div class="cal-day empty">·</div>';
+  for (var d = 1; d <= daysInMonth; d++) {
+    var cls = 'cal-day' + (d === 16 ? ' today' : '') + (eventDays[d] ? ' has-event' : '');
+    calHtml += '<div class="' + cls + '">' + d + '</div>';
+  }
+  calHtml += '</div>';
+  document.getElementById('calGrid').innerHTML = calHtml;
+
+  // Timeline
+  document.getElementById('evCount').textContent = D.events.length;
+  document.getElementById('timeline').innerHTML = D.events.slice(0, 6).map(function (e, i) {
+    var d = new Date(e.date);
+    return '<div class="timeline-item">' +
+      '<div class="tl-line"><div class="tl-dot" style="background:' + (typeColors[e.type]||'#888') + '"></div>' +
+      (i < 5 ? '<div class="tl-bar"></div>' : '') + '</div>' +
+      '<div class="tl-info"><div class="tl-date">' + d.getDate() + ' ' + mon3[d.getMonth()] + (e.time ? ' · ' + e.time : '') + '</div>' +
+      '<div class="tl-title">' + e.title + '</div>' +
+      '<div class="tl-sub">' + (e.location || '') + '</div></div>' +
+      '<span class="type-tag type-' + e.type + '">' + typeLabels[e.type] + '</span>' +
+      '</div>';
+  }).join('');
+
+  // Legend
+  var typeCounts = {};
+  D.events.forEach(function (e) { typeCounts[e.type] = (typeCounts[e.type] || 0) + 1; });
+  document.getElementById('legend').innerHTML = Object.keys(typeCounts).map(function (t) {
+    return '<div class="legend-item">' +
+      '<div class="legend-dot" style="background:' + (typeColors[t]||'#888') + '"></div>' +
+      '<span class="legend-label" style="font-size:11px">' + typeLabels[t] + '</span>' +
+      '<span class="legend-count">' + typeCounts[t] + '</span></div>';
+  }).join('');
+
+  // All events cards
+  document.getElementById('allEvents').innerHTML = D.events.map(function (e) {
+    var d = new Date(e.date);
+    return '<div class="event-item" style="flex-direction:column;align-items:flex-start;gap:6px;">' +
+      '<div style="display:flex;gap:10px;align-items:center;">' +
+      '<div class="event-date-box"><div class="eday">' + d.getDate() + '</div><div class="emon">' + mon3[d.getMonth()] + '</div></div>' +
+      '<div><div class="event-ttl">' + e.title + '</div><div class="event-sub">' + (e.time || '') + '</div></div></div>' +
+      '<div style="display:flex;gap:6px;align-items:center;">' +
+      '<span class="type-tag type-' + e.type + '">' + typeLabels[e.type] + '</span>' +
+      (e.location ? '<span style="font-size:11px;color:var(--text2)">📍 ' + e.location + '</span>' : '') +
+      '</div></div>';
+  }).join('');
+});
+</script>
+<script src="../shared/theme.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+var wm3 = { accent:'#a78bfa', bg:'rgba(10,8,32,0.97)', border:'rgba(167,139,250,0.22)', textPrimary:'#f0f0ff', textSecondary:'rgba(240,240,255,0.6)' };
+var walkme = new WalkMe([
+  { target: '#calGrid',    title: 'לוח שנה 📅',       text: 'מרץ 2026. היום מודגש בסגול. ימים עם אירועים מסומנים במסגרת.' },
+  { target: '#timeline',   title: 'ציר זמן',           text: 'אירועים קרובים לפי סדר, עם נקודות צבעוניות לפי סוג.' },
+  { target: '#legend',     title: 'מקרא',              text: 'כל סוג אירוע בצבע שונה — ישיבה (ציאן), הדרכה (ירוק), דד-ליין (אדום), חג (צהוב).' },
+  { target: '#allEvents',  title: 'כל האירועים',       text: 'גריד של כל האירועים. לחץ לפרטים נוספים.' }
+], wm3);
+var wmm = document.getElementById('walkme-trigger-mount');
+if (wmm) wmm.appendChild(WalkMe.createTriggerButton());
+</script>
+</body>
+</html>

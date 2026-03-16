@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>דיווח ובקשות — פורטל עובדים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f0f2f5; --card:#fff; --topbar-bg:#fff; --nav-bg:#0e4d9b;
+  --border:#dde1e7; --accent:#0e4d9b; --accent-light:#e8effa;
+  --text1:#1a2b4a; --text2:#5a6474; --text3:#9ca3af;
+  --success:#10b981; --warning:#f59e0b; --danger:#ef4444;
+  --radius:6px; --shadow:0 1px 3px rgba(0,0,0,0.08);
+  --bg3: #edf0f5;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Heebo',sans-serif; background:var(--bg); color:var(--text1); direction:rtl; min-height:100vh; }
+.portal-header { position:sticky; top:0; z-index:100; }
+.topbar { background:var(--topbar-bg); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; padding:0 20px; height:56px; box-shadow:var(--shadow); }
+.topbar-logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.logo-icon { width:36px; height:36px; border-radius:4px; background:#0e4d9b; display:grid; place-items:center; font-size:18px; color:#fff; }
+.logo-text { font-size:14px; font-weight:800; color:var(--accent); }
+.logo-sub { font-size:10px; color:var(--text2); }
+.topbar-divider { width:1px; height:32px; background:var(--border); flex-shrink:0; }
+.topbar-search { flex:1; max-width:340px; position:relative; }
+.topbar-search input { width:100%; background:#f8f9fb; border:1px solid var(--border); border-radius:20px; padding:7px 36px 7px 14px; color:var(--text1); font-size:13px; font-family:inherit; direction:rtl; }
+.topbar-search input:focus { outline:none; border-color:var(--accent); background:#fff; }
+.topbar-search input::placeholder { color:var(--text3); }
+.topbar-search .search-icon { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text3); font-size:13px; pointer-events:none; }
+.topbar-actions { margin-right:auto; display:flex; align-items:center; gap:8px; }
+.topbar-icon-btn { width:34px; height:34px; border-radius:50%; border:none; background:transparent; color:var(--text2); cursor:pointer; display:grid; place-items:center; font-size:16px; position:relative; }
+.topbar-icon-btn:hover { background:var(--bg); color:var(--accent); }
+.badge { position:absolute; top:0; right:0; width:15px; height:15px; background:var(--danger); border-radius:50%; font-size:8px; font-weight:700; display:grid; place-items:center; color:#fff; border:2px solid #fff; }
+.topbar-user { display:flex; align-items:center; gap:8px; cursor:pointer; padding:5px 10px; border-radius:20px; }
+.topbar-user:hover { background:var(--bg); }
+.user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#0e4d9b,#1565c0); display:grid; place-items:center; font-size:13px; font-weight:700; color:#fff; flex-shrink:0; }
+.topnav { background:var(--nav-bg); }
+.topnav-inner { max-width:1200px; margin:0 auto; padding:0 20px; display:flex; }
+.topnav-link { display:inline-flex; align-items:center; gap:6px; padding:11px 16px; color:rgba(255,255,255,0.8); text-decoration:none; font-size:13px; font-weight:600; border-bottom:3px solid transparent; transition:all 0.15s; white-space:nowrap; }
+.topnav-link:hover { color:#fff; background:rgba(255,255,255,0.1); }
+.topnav-link.active { color:#fff; border-bottom-color:#fff; background:rgba(255,255,255,0.12); }
+.main { padding:24px 20px; display:flex; justify-content:center; }
+.form-container { width:100%; max-width:720px; }
+
+.form-header { margin-bottom:24px; }
+.form-header h1 { font-size:22px; font-weight:800; }
+.form-header p { font-size:14px; color:var(--text2); margin-top:3px; }
+
+.progress-bar { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px 24px; margin-bottom:22px; display:flex; align-items:center; box-shadow:var(--shadow); }
+.prog-step { display:flex; align-items:center; flex:1; }
+.prog-dot { width:32px; height:32px; border-radius:50%; border:2px solid var(--border); background:var(--bg); display:grid; place-items:center; font-size:13px; font-weight:700; color:var(--text3); flex-shrink:0; transition:all 0.3s; z-index:1; }
+.prog-dot.active { border-color:var(--accent); background:var(--accent); color:#fff; }
+.prog-dot.done { border-color:var(--success); background:var(--success); color:#fff; }
+.prog-label { font-size:12px; color:var(--text3); margin-right:10px; transition:color 0.3s; }
+.prog-label.active { color:var(--accent); font-weight:600; }
+.prog-label.done { color:var(--success); }
+.prog-line { flex:1; height:2px; background:var(--border); margin:0 8px; transition:background 0.3s; }
+.prog-line.done { background:var(--success); }
+
+.step-panel { display:none; }
+.step-panel.active { display:block; animation:stepIn 0.3s ease; }
+@keyframes stepIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+
+.type-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:18px; }
+.type-card { background:var(--bg); border:2px solid var(--border); border-radius:var(--radius); padding:16px 12px; text-align:center; cursor:pointer; transition:all 0.2s; }
+.type-card:hover { border-color:var(--accent); background:var(--accent-light); }
+.type-card.selected { border-color:var(--accent); background:var(--accent-light); }
+.type-icon { font-size:26px; margin-bottom:8px; }
+.type-label { font-size:13px; font-weight:700; color:var(--text1); }
+.type-desc { font-size:11px; color:var(--text2); margin-top:3px; }
+
+.form-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; margin-bottom:14px; box-shadow:var(--shadow); }
+.form-card-title { font-size:14px; font-weight:700; color:var(--text1); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.field-group { margin-bottom:14px; }
+.field-label { font-size:13px; font-weight:600; color:var(--text2); margin-bottom:5px; display:block; }
+.field-label .req { color:var(--danger); margin-right:2px; }
+.field-input { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:9px 12px; color:var(--text1); font-size:14px; font-family:inherit; direction:rtl; transition:border-color 0.2s; }
+.field-input:focus { outline:none; border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(14,77,155,0.06); }
+.field-input::placeholder { color:var(--text3); }
+textarea.field-input { resize:vertical; min-height:90px; }
+select.field-input { cursor:pointer; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.priority-pills { display:flex; gap:8px; }
+.priority-pill { padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:transparent; color:var(--text2); transition:all 0.2s; font-family:inherit; }
+.priority-pill[data-p="high"]:hover,.priority-pill[data-p="high"].sel { border-color:var(--danger); color:var(--danger); background:rgba(239,68,68,0.06); }
+.priority-pill[data-p="medium"]:hover,.priority-pill[data-p="medium"].sel { border-color:var(--warning); color:var(--warning); background:rgba(245,158,11,0.06); }
+.priority-pill[data-p="low"]:hover,.priority-pill[data-p="low"].sel { border-color:var(--success); color:var(--success); background:rgba(16,185,129,0.06); }
+
+.confirm-summary { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px 22px; margin-bottom:14px; box-shadow:var(--shadow); }
+.confirm-row { display:flex; gap:12px; padding:9px 0; border-bottom:1px solid var(--border); }
+.confirm-row:last-child { border-bottom:none; }
+.confirm-label { font-size:12px; color:var(--text3); font-weight:600; min-width:100px; }
+.confirm-val { font-size:14px; color:var(--text1); }
+
+.success-screen { text-align:center; padding:40px 20px; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
+.success-icon { font-size:60px; margin-bottom:14px; }
+.success-title { font-size:22px; font-weight:800; color:var(--success); margin-bottom:6px; }
+.success-sub { font-size:14px; color:var(--text2); margin-bottom:6px; }
+.ticket-num { font-size:20px; font-weight:700; color:var(--accent); }
+
+.btn { display:inline-flex; align-items:center; gap:6px; padding:10px 22px; border-radius:4px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.2s; border:none; text-decoration:none; }
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover { background:#0a3d7a; }
+.btn-ghost { background:transparent; border:1.5px solid var(--border); color:var(--text2); }
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+.btn-success { background:var(--success); color:#fff; }
+.form-footer { display:flex; gap:10px; margin-top:18px; }
+
+.requests-section { margin-top:28px; border-top:2px solid var(--border); padding-top:22px; }
+.requests-section h2 { font-size:16px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
+
+@media(max-width:640px) { .type-grid { grid-template-columns:repeat(2,1fr); } .field-row { grid-template-columns:1fr; } }
+
+/* ── DARK MODE override for option-2 ── */
+html:not(.light-mode) {
+  --bg: #0f1117;
+  --card: #1a1f2e;
+  --topbar-bg: #13182a;
+  --nav-bg: #0a3270;
+  --border: #27334d;
+  --accent: #4d8ef0;
+  --accent-light: rgba(77,142,240,0.12);
+  --text1: #e8edf8;
+  --text2: #8fa3c8;
+  --text3: #4a6080;
+  --bg3: #1e2535;
+  --shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+html:not(.light-mode) .topbar { background: var(--topbar-bg) !important; border-bottom-color: var(--border) !important; }
+html:not(.light-mode) .topnav { background: var(--nav-bg) !important; }
+html:not(.light-mode) .topbar-search input { background: var(--bg3) !important; color: var(--text1) !important; border-color: var(--border) !important; }
+html:not(.light-mode) .topbar-search input::placeholder { color: var(--text3) !important; }</style>
+<link rel="stylesheet" href="../shared/theme.css">
+</head>
+<body>
+<div class="portal-header">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">🏛️</div>
+      <div><div class="logo-text">פורטל עובדים</div><div class="logo-sub">משרד החדשנות, המדע והטכנולוגיה</div></div>
+    </div>
+    <div class="topbar-divider"></div>
+    <div class="topbar-search"><span class="search-icon">🔍</span><input type="text" placeholder="חיפוש..."></div>
+    <div id="option-switcher-mount"></div>
+    <div class="topbar-actions">
+      <div id="discover-mount"></div>
+      <div id="theme-toggle-mount"></div>
+      <div id="walkme-trigger-mount"></div>
+      <div class="topbar-icon-btn">🔔<span class="badge">7</span></div>
+      <div class="topbar-user"><div class="user-avatar" id="user-av"></div><div style="font-size:13px;font-weight:600" id="user-nm"></div></div>
+    </div>
+  </div>
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <a class="topnav-link" href="index.html"><span>🏠</span> דף הבית</a>
+      <a class="topnav-link" href="announcements.html"><span>📣</span> עדכונים</a>
+      <a class="topnav-link" href="events.html"><span>📅</span> אירועים</a>
+      <a class="topnav-link" href="info.html"><span>📚</span> מאגר מידע</a>
+      <a class="topnav-link" href="contacts.html"><span>👤</span> ספר טלפונים</a>
+      <a class="topnav-link active" href="report.html"><span>📝</span> דיווח ובקשות</a>
+    </div>
+  </nav>
+</div>
+<main class="main">
+  <div class="form-container">
+    <div class="form-header"><h1>📝 דיווח ובקשות</h1><p>שלושה שלבים פשוטים לשליחת בקשה</p></div>
+
+    <div class="progress-bar" id="progress-bar">
+      <div class="prog-step">
+        <div class="prog-dot active" id="dot-1">1</div>
+        <span class="prog-label active" id="lbl-1">סוג הדיווח</span>
+      </div>
+      <div class="prog-line" id="line-1"></div>
+      <div class="prog-step">
+        <div class="prog-dot" id="dot-2">2</div>
+        <span class="prog-label" id="lbl-2">פרטים</span>
+      </div>
+      <div class="prog-line" id="line-2"></div>
+      <div class="prog-step">
+        <div class="prog-dot" id="dot-3">3</div>
+        <span class="prog-label" id="lbl-3">אישור ושליחה</span>
+      </div>
+    </div>
+
+    <div class="step-panel active" id="step-1">
+      <div class="form-card">
+        <div class="form-card-title">🎯 בחרו את סוג הדיווח</div>
+        <div class="type-grid" id="type-grid"></div>
+      </div>
+      <div class="form-footer"><button class="btn btn-primary" onclick="goStep(2)">הבא ←</button></div>
+    </div>
+
+    <div class="step-panel" id="step-2">
+      <div class="form-card">
+        <div class="form-card-title">📋 פרטי הבקשה</div>
+        <div class="field-row">
+          <div class="field-group"><label class="field-label"><span class="req">*</span> שם מגיש</label><input class="field-input" id="f-name" type="text" placeholder="שם מלא"></div>
+          <div class="field-group"><label class="field-label"><span class="req">*</span> יחידה</label><select class="field-input" id="f-unit"><option value="">בחרו יחידה...</option></select></div>
+        </div>
+        <div class="field-group"><label class="field-label"><span class="req">*</span> נושא הבקשה</label><input class="field-input" id="f-title" type="text" placeholder="תיאור קצר"></div>
+        <div class="field-group"><label class="field-label"><span class="req">*</span> פירוט</label><textarea class="field-input" id="f-desc" placeholder="תארו את הבעיה או הבקשה..."></textarea></div>
+        <div class="field-group">
+          <label class="field-label">עדיפות</label>
+          <div class="priority-pills">
+            <button class="priority-pill" data-p="high" onclick="setPriority('high',this)">🔴 גבוהה</button>
+            <button class="priority-pill sel" data-p="medium" onclick="setPriority('medium',this)">🟡 בינונית</button>
+            <button class="priority-pill" data-p="low" onclick="setPriority('low',this)">🟢 נמוכה</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <button class="btn btn-primary" onclick="goStep(3)">המשך לאישור ←</button>
+        <button class="btn btn-ghost" onclick="goStep(1)">← חזרה</button>
+      </div>
+    </div>
+
+    <div class="step-panel" id="step-3">
+      <div class="confirm-summary" id="confirm-summary"></div>
+      <div class="form-footer">
+        <button class="btn btn-success" onclick="submitForm()">✓ שלח בקשה</button>
+        <button class="btn btn-ghost" onclick="goStep(2)">← חזרה</button>
+      </div>
+    </div>
+
+    <div class="step-panel" id="step-success">
+      <div class="success-screen">
+        <div class="success-icon">✅</div>
+        <div class="success-title">הבקשה נשלחה בהצלחה!</div>
+        <div class="success-sub">מספר הפנייה שלכם:</div>
+        <div class="ticket-num" id="ticket-num"></div>
+        <div class="success-sub" style="margin-top:10px">תקבלו עדכון במייל תוך יום עסקים אחד</div>
+        <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;">
+          <a href="index.html" class="btn btn-primary">חזרה לדף הבית</a>
+          <button class="btn btn-ghost" onclick="resetForm()">דיווח נוסף</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="requests-section" id="requests-section">
+      <h2>📋 הבקשות שלי <button id="clear-btn" onclick="DemoStore.clear();renderHistory()" style="font-size:11px;background:transparent;border:1px solid var(--border);color:var(--text3);padding:4px 12px;border-radius:4px;cursor:pointer;font-family:inherit;display:none;font-weight:400">נקה הכל</button></h2>
+      <div id="requests-history"></div>
+    </div>
+  </div>
+</main>
+<script src="../shared/store.js"></script>
+<script src="../shared/data.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+const d = PortalData;
+document.getElementById('user-av').textContent = d.user.firstName[0];
+document.getElementById('user-nm').textContent = d.user.name;
+
+let selectedType = null, selectedPriority = 'medium', currentStep = 1;
+
+const tg = document.getElementById('type-grid');
+d.reportTypes.forEach(t => {
+  tg.innerHTML += `<div class="type-card" data-id="${t.id}" onclick="selectType('${t.id}',this)">
+    <div class="type-icon">${t.icon}</div>
+    <div class="type-label">${t.label}</div>
+    <div class="type-desc">${t.desc}</div>
+  </div>`;
+});
+
+const us = document.getElementById('f-unit');
+d.units.forEach(u => { us.innerHTML += `<option value="${u.id}">${u.name}</option>`; });
+document.getElementById('f-name').value = d.user.name;
+
+function selectType(id, el) {
+  selectedType = id;
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function setPriority(p, el) {
+  selectedPriority = p;
+  document.querySelectorAll('.priority-pill').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function goStep(n) {
+  if (n === 2 && !selectedType) { alert('נא לבחור סוג דיווח'); return; }
+  if (n === 3) {
+    if (!document.getElementById('f-title').value.trim() || !document.getElementById('f-desc').value.trim()) { alert('נא למלא את כל השדות הנדרשים'); return; }
+    buildConfirm();
+  }
+  [1,2,3].forEach(i => {
+    const dot = document.getElementById('dot-'+i), lbl = document.getElementById('lbl-'+i);
+    if (i < n) { dot.textContent='✓'; dot.className='prog-dot done'; lbl.className='prog-label done'; }
+    else if (i === n) { dot.textContent=i; dot.className='prog-dot active'; lbl.className='prog-label active'; }
+    else { dot.textContent=i; dot.className='prog-dot'; lbl.className='prog-label'; }
+  });
+  [1,2].forEach(i => { document.getElementById('line-'+i).className = 'prog-line' + (i < n ? ' done' : ''); });
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  currentStep = n;
+}
+function buildConfirm() {
+  const typeObj = d.reportTypes.find(t => t.id === selectedType) || {};
+  const unitEl = document.getElementById('f-unit');
+  const unitLabel = unitEl.options[unitEl.selectedIndex]?.text || '';
+  const pLabels = { high:'🔴 גבוהה', medium:'🟡 בינונית', low:'🟢 נמוכה' };
+  document.getElementById('confirm-summary').innerHTML = `
+    <div style="font-size:15px;font-weight:700;margin-bottom:14px;color:var(--text1)">סיכום הבקשה</div>
+    <div class="confirm-row"><span class="confirm-label">סוג</span><span class="confirm-val">${typeObj.icon||''} ${typeObj.label||''}</span></div>
+    <div class="confirm-row"><span class="confirm-label">שם מגיש</span><span class="confirm-val">${document.getElementById('f-name').value}</span></div>
+    <div class="confirm-row"><span class="confirm-label">יחידה</span><span class="confirm-val">${unitLabel}</span></div>
+    <div class="confirm-row"><span class="confirm-label">נושא</span><span class="confirm-val">${document.getElementById('f-title').value}</span></div>
+    <div class="confirm-row"><span class="confirm-label">פירוט</span><span class="confirm-val">${document.getElementById('f-desc').value}</span></div>
+    <div class="confirm-row"><span class="confirm-label">עדיפות</span><span class="confirm-val">${pLabels[selectedPriority]}</span></div>`;
+}
+function submitForm() {
+  const typeObj = d.reportTypes.find(t => t.id === selectedType) || {};
+  const unitEl = document.getElementById('f-unit');
+  const pLabels = { high:'גבוהה', medium:'בינונית', low:'נמוכה' };
+  const saved = DemoStore.addReport({
+    type: typeObj.label || selectedType, typeIcon: typeObj.icon || '📝',
+    title: document.getElementById('f-title').value,
+    desc: document.getElementById('f-desc').value,
+    priority: pLabels[selectedPriority],
+    unit: unitEl.options[unitEl.selectedIndex]?.text || '',
+    name: document.getElementById('f-name').value,
+  });
+  document.getElementById('ticket-num').textContent = saved.id;
+  [1,2,3].forEach(i => { document.getElementById('dot-'+i).textContent='✓'; document.getElementById('dot-'+i).className='prog-dot done'; document.getElementById('lbl-'+i).className='prog-label done'; });
+  [1,2].forEach(i => document.getElementById('line-'+i).className = 'prog-line done');
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-success').classList.add('active');
+  renderHistory(true);
+}
+function renderHistory(scrollTo) {
+  const reports = DemoStore.getReports();
+  const el = document.getElementById('requests-history');
+  const clearBtn = document.getElementById('clear-btn');
+  if (!reports.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:10px 0">לא הוגשו בקשות עדיין.</div>';
+    if (clearBtn) clearBtn.style.display = 'none'; return;
+  }
+  if (clearBtn) clearBtn.style.display = 'inline-block';
+  const pColors = { 'גבוהה':'var(--danger)', 'בינונית':'var(--warning)', 'נמוכה':'var(--success)' };
+  el.innerHTML = reports.map(r => `<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;gap:14px;align-items:center;box-shadow:var(--shadow)">
+    <span style="font-size:20px">${r.typeIcon}</span>
+    <div style="flex:1"><div style="font-size:14px;font-weight:600;color:var(--text1)">${r.title}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${r.type} · ${r.unit} · ${r.at}</div></div>
+    <div><div style="font-size:11px;font-weight:700;color:var(--accent)">${r.id}</div><div style="font-size:11px;color:${pColors[r.priority]||'var(--text3)'};margin-top:2px">${r.priority}</div></div>
+    <div style="background:rgba(16,185,129,0.1);color:var(--success);font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px">${r.status}</div>
+  </div>`).join('');
+  if (scrollTo) setTimeout(() => document.getElementById('requests-section').scrollIntoView({behavior:'smooth',block:'start'}), 300);
+}
+function resetForm() {
+  selectedType = null; selectedPriority = 'medium';
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-desc').value = '';
+  goStep(1);
+}
+renderHistory(false);
+
+const walkme = new WalkMe([
+  { target: '#progress-bar', title: 'תהליך שלושה שלבים', text: 'סוג הדיווח, מילוי פרטים ואישור.' },
+  { target: '#type-grid', title: 'בחרו סוג דיווח', text: 'לחצו על הסוג המתאים.' },
+  { target: '#requests-section', title: 'הבקשות שלי', text: 'כל הבקשות שהגשתם מוצגות כאן.' }
+], { accent:'#0e4d9b', bg:'#fff', border:'#dde1e7', textPrimary:'#1a2b4a', textSecondary:'#5a6474' });
+document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
+</script>
+<script src="../shared/theme.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+</body>
+</html>

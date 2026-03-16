@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<link rel="stylesheet" href="../shared/theme.css">
+<script>(function(){var t;try{t=new URLSearchParams(window.location.search).get("t")}catch(e){}if(!t){try{t=localStorage.getItem("portal-theme")}catch(e){}}if(!t){try{t=sessionStorage.getItem("portal-theme")}catch(e){}}if(t==="light")document.documentElement.classList.add("light-mode");else document.documentElement.classList.remove("light-mode");})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>טופס דיווח — פורטל עובדים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#070c18; --bg2:#0d1629; --bg3:#111d35; --bg4:#162040;
+  --border:#1e3358; --accent:#00c2e0; --accent2:#7c3aed;
+  --text1:#e2eaf8; --text2:#8fa3c8; --text3:#4a6080;
+  --success:#10b981; --warning:#f59e0b; --danger:#ef4444;
+  --sidebar:230px; --topbar:60px; --radius:12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Heebo',sans-serif; background:var(--bg); color:var(--text1); direction:rtl; }
+.layout { display:grid; grid-template-columns:var(--sidebar) 1fr; grid-template-rows:var(--topbar) 1fr; min-height:100vh; }
+.topbar { grid-column:1/-1; background:var(--bg2); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:16px; padding:0 24px; position:sticky; top:0; z-index:100; }
+.topbar-logo { display:flex; align-items:center; gap:10px; width:var(--sidebar); flex-shrink:0; }
+.logo-icon { width:32px; height:32px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:8px; display:grid; place-items:center; font-size:16px; }
+.logo-text { font-size:13px; font-weight:700; }
+.logo-sub { font-size:10px; color:var(--text2); }
+.topbar-search { flex:1; max-width:380px; position:relative; }
+.topbar-search input { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:8px 14px 8px 38px; color:var(--text1); font-size:13.5px; font-family:inherit; direction:rtl; }
+.topbar-search input:focus { outline:none; border-color:var(--accent); }
+.topbar-search input::placeholder { color:var(--text3); }
+.topbar-search .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text3); pointer-events:none; }
+.topbar-actions { margin-right:auto; display:flex; align-items:center; gap:10px; }
+.topbar-icon-btn { width:36px; height:36px; border-radius:8px; background:var(--bg3); border:1px solid var(--border); color:var(--text2); cursor:pointer; display:grid; place-items:center; position:relative; }
+.badge { position:absolute; top:-4px; right:-4px; width:16px; height:16px; background:var(--danger); border-radius:50%; font-size:9px; font-weight:700; display:grid; place-items:center; color:#fff; }
+.topbar-user { display:flex; align-items:center; gap:8px; padding:4px 8px; border-radius:8px; cursor:pointer; }
+.user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:grid; place-items:center; font-size:13px; font-weight:700; color:#fff; }
+.sidebar { background:var(--bg2); border-left:1px solid var(--border); padding:16px 0; position:sticky; top:var(--topbar); height:calc(100vh - var(--topbar)); overflow-y:auto; }
+.sidebar-section { padding:0 12px; margin-bottom:6px; }
+.sidebar-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; padding:8px 6px 4px; }
+.sidebar-link { display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px; text-decoration:none; color:var(--text2); font-size:13.5px; font-weight:500; transition:all 0.15s; }
+.sidebar-link:hover { background:var(--bg3); color:var(--text1); }
+.sidebar-link.active { background:rgba(0,194,224,0.12); color:var(--accent); }
+.sidebar-link .icon { font-size:15px; width:20px; text-align:center; }
+.sidebar-divider { height:1px; background:var(--border); margin:8px 12px; }
+.main { padding:24px; overflow-y:auto; display:flex; justify-content:center; }
+
+/* FORM CONTAINER */
+.form-container { width:100%; max-width:700px; }
+.form-title { font-size:22px; font-weight:800; margin-bottom:6px; }
+.form-subtitle { font-size:14px; color:var(--text2); margin-bottom:24px; }
+
+/* PROGRESS */
+.progress-bar {
+  background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius);
+  padding:20px 24px; margin-bottom:24px;
+  display:flex; align-items:center; gap:0;
+}
+.prog-step { display:flex; align-items:center; flex:1; }
+.prog-dot {
+  width:34px; height:34px; border-radius:50%;
+  border:2px solid var(--border); background:var(--bg3);
+  display:grid; place-items:center; font-size:13px; font-weight:700;
+  color:var(--text3); flex-shrink:0; transition:all 0.3s; z-index:1;
+}
+.prog-dot.active { border-color:var(--accent); background:var(--accent); color:#fff; }
+.prog-dot.done { border-color:var(--success); background:var(--success); color:#fff; }
+.prog-label { font-size:12px; color:var(--text3); margin-right:10px; transition:color 0.3s; }
+.prog-label.active { color:var(--accent); font-weight:600; }
+.prog-label.done { color:var(--success); }
+.prog-line { flex:1; height:2px; background:var(--border); margin:0 8px; transition:background 0.3s; }
+.prog-line.done { background:var(--success); }
+
+/* STEP PANELS */
+.step-panel { display:none; }
+.step-panel.active { display:block; animation:stepIn 0.3s ease; }
+@keyframes stepIn { from { opacity:0; transform:translateX(-10px); } to { opacity:1; transform:translateX(0); } }
+
+/* TYPE SELECTOR */
+.type-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+.type-card {
+  background:var(--bg2); border:2px solid var(--border); border-radius:10px;
+  padding:18px 14px; text-align:center; cursor:pointer;
+  transition:all 0.2s;
+}
+.type-card:hover { border-color:var(--accent); background:var(--bg3); }
+.type-card.selected { border-color:var(--accent); background:rgba(0,194,224,0.08); }
+.type-icon { font-size:28px; margin-bottom:8px; }
+.type-label { font-size:13px; font-weight:700; color:var(--text1); }
+.type-desc { font-size:11px; color:var(--text2); margin-top:3px; }
+
+/* FORM FIELDS */
+.form-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:22px 24px; margin-bottom:16px;
+}
+.form-card-title { font-size:14px; font-weight:700; color:var(--text1); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.field-group { margin-bottom:16px; }
+.field-label { font-size:13px; font-weight:600; color:var(--text2); margin-bottom:6px; display:block; }
+.field-label .req { color:var(--danger); margin-right:2px; }
+.field-input {
+  width:100%; background:var(--bg3); border:1px solid var(--border);
+  border-radius:8px; padding:10px 14px; color:var(--text1); font-size:14px;
+  font-family:inherit; direction:rtl; transition:border-color 0.2s;
+}
+.field-input:focus { outline:none; border-color:var(--accent); }
+.field-input::placeholder { color:var(--text3); }
+textarea.field-input { resize:vertical; min-height:100px; }
+select.field-input { cursor:pointer; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.priority-pills { display:flex; gap:8px; }
+.priority-pill {
+  padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;
+  cursor:pointer; border:1.5px solid var(--border); background:transparent;
+  color:var(--text2); transition:all 0.2s; font-family:inherit;
+}
+.priority-pill[data-p="high"]:hover, .priority-pill[data-p="high"].sel { border-color:var(--danger); color:var(--danger); background:rgba(239,68,68,0.08); }
+.priority-pill[data-p="medium"]:hover, .priority-pill[data-p="medium"].sel { border-color:var(--warning); color:var(--warning); background:rgba(245,158,11,0.08); }
+.priority-pill[data-p="low"]:hover, .priority-pill[data-p="low"].sel { border-color:var(--success); color:var(--success); background:rgba(16,185,129,0.08); }
+
+/* CONFIRM */
+.confirm-summary {
+  background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius);
+  padding:22px 24px; margin-bottom:16px;
+}
+.confirm-row { display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--border); }
+.confirm-row:last-child { border-bottom:none; }
+.confirm-label { font-size:12px; color:var(--text3); font-weight:600; min-width:100px; }
+.confirm-val { font-size:14px; color:var(--text1); font-weight:500; }
+
+/* SUCCESS */
+.success-screen { text-align:center; padding:40px 20px; }
+.success-icon { font-size:64px; margin-bottom:16px; }
+.success-title { font-size:24px; font-weight:800; color:var(--success); margin-bottom:8px; }
+.success-sub { font-size:14px; color:var(--text2); margin-bottom:8px; }
+.ticket-num { font-size:20px; font-weight:700; color:var(--accent); }
+
+/* BUTTONS */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:10px 22px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.2s; border:none; text-decoration:none; }
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover { opacity:0.85; }
+.btn-ghost { background:transparent; border:1.5px solid var(--border); color:var(--text2); }
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+.btn-success { background:var(--success); color:#fff; }
+.form-footer { display:flex; gap:10px; justify-content:flex-start; margin-top:20px; }
+
+@media(max-width:768px) { .layout { grid-template-columns:1fr; } .sidebar { display:none; } .type-grid { grid-template-columns:repeat(2,1fr); } .field-row { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <header class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">🏛️</div>
+      <div><div class="logo-text">פורטל עובדים</div><div class="logo-sub">משרד החדשנות, המדע והטכנולוגיה</div></div>
+    </div>
+    <div class="topbar-search"><span class="search-icon">🔍</span><input type="text" placeholder="חיפוש..."></div>
+        <div id="option-switcher-mount"></div>
+      <div class="topbar-actions">
+      <div id="discover-mount"></div>
+      <div id="theme-toggle-mount"></div>
+      <div id="walkme-trigger-mount"></div>
+      <div class="topbar-icon-btn">🔔<span class="badge">7</span></div>
+      <div class="topbar-user">
+        <div class="user-avatar" id="user-av"></div>
+        <div><div style="font-size:13px;font-weight:600" id="user-nm"></div></div>
+      </div>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">ניווט ראשי</div>
+      <a class="sidebar-link" href="index.html"><span class="icon">🏠</span> דף הבית</a>
+      <a class="sidebar-link" href="announcements.html"><span class="icon">📣</span> עדכונים</a>
+      <a class="sidebar-link" href="events.html"><span class="icon">📅</span> אירועים</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">שירותים</div>
+      <a class="sidebar-link" href="info.html"><span class="icon">📚</span> מאגר מידע</a>
+      <a class="sidebar-link" href="contacts.html"><span class="icon">👤</span> ספר טלפונים</a>
+      <a class="sidebar-link active" href="report.html"><span class="icon">📝</span> דיווח ובקשות</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">מערכות</div>
+      <a class="sidebar-link" href="#"><span class="icon">⏱️</span> מרכב"ה</a>
+      <a class="sidebar-link" href="#"><span class="icon">🎫</span> TopDesk</a>
+      <a class="sidebar-link" href="#"><span class="icon">✅</span> Action Base</a>
+    </div>
+  </nav>
+  <main class="main">
+    <div class="form-container">
+      <div class="form-title">📝 דיווח ובקשות</div>
+      <div class="form-subtitle">שלושה שלבים פשוטים לשליחת בקשה</div>
+
+      <!-- Progress -->
+      <div class="progress-bar" id="progress-bar">
+        <div class="prog-step">
+          <div class="prog-dot active" id="dot-1">1</div>
+          <span class="prog-label active" id="lbl-1">סוג הדיווח</span>
+        </div>
+        <div class="prog-line" id="line-1"></div>
+        <div class="prog-step">
+          <div class="prog-dot" id="dot-2">2</div>
+          <span class="prog-label" id="lbl-2">פרטים</span>
+        </div>
+        <div class="prog-line" id="line-2"></div>
+        <div class="prog-step">
+          <div class="prog-dot" id="dot-3">3</div>
+          <span class="prog-label" id="lbl-3">אישור ושליחה</span>
+        </div>
+      </div>
+
+      <!-- STEP 1: Type -->
+      <div class="step-panel active" id="step-1">
+        <div class="form-card">
+          <div class="form-card-title">🎯 בחרו את סוג הדיווח</div>
+          <div class="type-grid" id="type-grid"></div>
+        </div>
+        <div class="form-footer">
+          <button class="btn btn-primary" onclick="goStep(2)">הבא ←</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Details -->
+      <div class="step-panel" id="step-2">
+        <div class="form-card">
+          <div class="form-card-title">📋 פרטי הבקשה</div>
+          <div class="field-row">
+            <div class="field-group">
+              <label class="field-label"><span class="req">*</span> שם מגיש</label>
+              <input class="field-input" id="f-name" type="text" value="" placeholder="שם מלא">
+            </div>
+            <div class="field-group">
+              <label class="field-label"><span class="req">*</span> יחידה</label>
+              <select class="field-input" id="f-unit">
+                <option value="">בחרו יחידה...</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label"><span class="req">*</span> נושא הבקשה</label>
+            <input class="field-input" id="f-title" type="text" placeholder="תיאור קצר של הבקשה">
+          </div>
+          <div class="field-group">
+            <label class="field-label"><span class="req">*</span> פירוט</label>
+            <textarea class="field-input" id="f-desc" placeholder="תארו את הבעיה או הבקשה בפירוט..."></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">עדיפות</label>
+            <div class="priority-pills">
+              <button class="priority-pill" data-p="high" onclick="setPriority('high',this)">🔴 גבוהה</button>
+              <button class="priority-pill sel" data-p="medium" onclick="setPriority('medium',this)">🟡 בינונית</button>
+              <button class="priority-pill" data-p="low" onclick="setPriority('low',this)">🟢 נמוכה</button>
+            </div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn btn-primary" onclick="goStep(3)">המשך לאישור ←</button>
+          <button class="btn btn-ghost" onclick="goStep(1)">← חזרה</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Confirm -->
+      <div class="step-panel" id="step-3">
+        <div class="confirm-summary" id="confirm-summary"></div>
+        <div class="form-footer">
+          <button class="btn btn-success" onclick="submitForm()">✓ שלח בקשה</button>
+          <button class="btn btn-ghost" onclick="goStep(2)">← חזרה</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="step-panel" id="step-success">
+        <div class="success-screen">
+          <div class="success-icon">✅</div>
+          <div class="success-title">הבקשה נשלחה בהצלחה!</div>
+          <div class="success-sub">מספר הפנייה שלכם:</div>
+          <div class="ticket-num" id="ticket-num"></div>
+          <div class="success-sub" style="margin-top:12px">תקבלו עדכון במייל תוך יום עסקים אחד</div>
+          <div style="margin-top:24px; display:flex; gap:10px; justify-content:center;">
+            <a href="index.html" class="btn btn-primary">חזרה לדף הבית</a>
+            <button class="btn btn-ghost" onclick="resetForm()">דיווח נוסף</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY REQUESTS — always visible, outside the step panels -->
+    <div id="requests-section" style="margin-top:32px; border-top:1px solid var(--border); padding-top:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:16px;font-weight:700;color:var(--text1)">📋 הבקשות שלי</div>
+        <button id="clear-btn" onclick="DemoStore.clear();renderHistory()" style="font-size:11px;background:transparent;border:1px solid var(--border);color:var(--text3);padding:4px 12px;border-radius:6px;cursor:pointer;font-family:inherit;display:none">נקה הכל</button>
+      </div>
+      <div id="requests-history"></div>
+    </div>
+  </main>
+</div>
+<script src="../shared/theme.js"></script>
+<script src="../shared/store.js"></script>
+<script src="../shared/data.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+const d = PortalData;
+document.getElementById('user-av').textContent = d.user.firstName[0];
+document.getElementById('user-nm').textContent = d.user.name;
+
+let selectedType = null, selectedPriority = 'medium';
+let currentStep = 1;
+
+// Build type grid
+const tg = document.getElementById('type-grid');
+d.reportTypes.forEach(t => {
+  tg.innerHTML += `<div class="type-card" data-id="${t.id}" onclick="selectType('${t.id}',this)">
+    <div class="type-icon">${t.icon}</div>
+    <div class="type-label">${t.label}</div>
+    <div class="type-desc">${t.desc}</div>
+  </div>`;
+});
+
+// Build unit select
+const us = document.getElementById('f-unit');
+d.units.forEach(u => { us.innerHTML += `<option value="${u.id}">${u.name}</option>`; });
+// Pre-fill name
+document.getElementById('f-name').value = d.user.name;
+
+function selectType(id, el) {
+  selectedType = id;
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function setPriority(p, el) {
+  selectedPriority = p;
+  document.querySelectorAll('.priority-pill').forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function goStep(n) {
+  if (n === 2 && !selectedType) { alert('נא לבחור סוג דיווח'); return; }
+  if (n === 3) {
+    const title = document.getElementById('f-title').value.trim();
+    const desc = document.getElementById('f-desc').value.trim();
+    if (!title || !desc) { alert('נא למלא את כל השדות הנדרשים'); return; }
+    buildConfirm();
+  }
+
+  // Update progress
+  [1,2,3].forEach(i => {
+    const dot = document.getElementById('dot-'+i);
+    const lbl = document.getElementById('lbl-'+i);
+    if (i < n) { dot.textContent='✓'; dot.className='prog-dot done'; lbl.className='prog-label done'; }
+    else if (i === n) { dot.textContent=i; dot.className='prog-dot active'; lbl.className='prog-label active'; }
+    else { dot.textContent=i; dot.className='prog-dot'; lbl.className='prog-label'; }
+  });
+  [1,2].forEach(i => {
+    document.getElementById('line-'+i).className = 'prog-line' + (i < n ? ' done' : '');
+  });
+
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-'+n).classList.add('active');
+  currentStep = n;
+}
+
+function buildConfirm() {
+  const typeObj = d.reportTypes.find(t => t.id === selectedType) || {};
+  const unitEl = document.getElementById('f-unit');
+  const unitLabel = unitEl.options[unitEl.selectedIndex]?.text || '';
+  const pLabels = { high:'🔴 גבוהה', medium:'🟡 בינונית', low:'🟢 נמוכה' };
+
+  document.getElementById('confirm-summary').innerHTML = `
+    <div style="font-size:15px;font-weight:700;margin-bottom:16px">סיכום הבקשה</div>
+    <div class="confirm-row"><span class="confirm-label">סוג</span><span class="confirm-val">${typeObj.icon||''} ${typeObj.label||''}</span></div>
+    <div class="confirm-row"><span class="confirm-label">שם מגיש</span><span class="confirm-val">${document.getElementById('f-name').value}</span></div>
+    <div class="confirm-row"><span class="confirm-label">יחידה</span><span class="confirm-val">${unitLabel}</span></div>
+    <div class="confirm-row"><span class="confirm-label">נושא</span><span class="confirm-val">${document.getElementById('f-title').value}</span></div>
+    <div class="confirm-row"><span class="confirm-label">פירוט</span><span class="confirm-val">${document.getElementById('f-desc').value}</span></div>
+    <div class="confirm-row"><span class="confirm-label">עדיפות</span><span class="confirm-val">${pLabels[selectedPriority]}</span></div>
+  `;
+}
+
+function submitForm() {
+  const typeObj  = d.reportTypes.find(t => t.id === selectedType) || {};
+  const unitEl   = document.getElementById('f-unit');
+  const unitLabel = unitEl.options[unitEl.selectedIndex]?.text || '';
+  const pLabels  = { high:'גבוהה', medium:'בינונית', low:'נמוכה' };
+
+  // Save to store (single localStorage key)
+  const saved = DemoStore.addReport({
+    type:     typeObj.label || selectedType,
+    typeIcon: typeObj.icon  || '📝',
+    title:    document.getElementById('f-title').value,
+    desc:     document.getElementById('f-desc').value,
+    priority: pLabels[selectedPriority],
+    unit:     unitLabel,
+    name:     document.getElementById('f-name').value,
+  });
+
+  document.getElementById('ticket-num').textContent = saved.id;
+
+  [1,2,3].forEach(i => {
+    document.getElementById('dot-'+i).textContent = '✓';
+    document.getElementById('dot-'+i).className = 'prog-dot done';
+    document.getElementById('lbl-'+i).className = 'prog-label done';
+  });
+  [1,2].forEach(i => document.getElementById('line-'+i).className = 'prog-line done');
+
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step-success').classList.add('active');
+  renderHistory(true);  // true = scroll to list
+}
+
+function renderHistory(scrollTo) {
+  const reports = DemoStore.getReports();
+  const el = document.getElementById('requests-history');
+  const clearBtn = document.getElementById('clear-btn');
+  if (!reports.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:12px 0">לא הוגשו בקשות עדיין. מלאו טופס למעלה.</div>';
+    if (clearBtn) clearBtn.style.display = 'none';
+    return;
+  }
+  if (clearBtn) clearBtn.style.display = 'inline-block';
+  const pColors = { 'גבוהה':'var(--danger)', 'בינונית':'var(--warning)', 'נמוכה':'var(--success)' };
+  el.innerHTML = reports.map(r => `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;gap:14px;align-items:center">
+      <span style="font-size:22px">${r.typeIcon}</span>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600;color:var(--text1)">${r.title}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:3px">${r.type} · ${r.unit} · ${r.at}</div>
+      </div>
+      <div style="text-align:left">
+        <div style="font-size:11px;font-weight:700;color:var(--accent)">${r.id}</div>
+        <div style="font-size:11px;color:${pColors[r.priority]||'var(--text3)'};margin-top:2px">${r.priority}</div>
+      </div>
+      <div style="background:rgba(16,185,129,0.1);color:var(--success);font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px">${r.status}</div>
+    </div>`).join('');
+
+  if (scrollTo) {
+    setTimeout(() => {
+      document.getElementById('requests-section').scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 300);
+  }
+}
+
+function resetForm() {
+  selectedType = null; selectedPriority = 'medium';
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-desc').value = '';
+  goStep(1);
+}
+
+// Show history on page load
+renderHistory(false);
+
+// WalkMe
+const walkme = new WalkMe([
+  { target: '#progress-bar',      title: 'תהליך שלושה שלבים', text: 'הטופס מחולק לשלושה שלבים: בחירת סוג, מילוי פרטים ואישור לפני שליחה.' },
+  { target: '#type-grid',         title: 'בחרו סוג דיווח',    text: 'לחצו על הסוג המתאים — תקלה טכנית, תחזוקה, בקשת ציוד ועוד.' },
+  { target: '#requests-section',  title: 'הבקשות שלי',         text: 'כאן תראו את כל הבקשות שהגשתם. ניתן לנקות הכל עם כפתור "נקה הכל".' }
+], { accent:'#00c2e0', bg:'#0d1629', border:'#1e3358', textPrimary:'#e2eaf8', textSecondary:'#8fa3c8' });
+document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
+</script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+</body>
+</html>

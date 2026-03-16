@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>פורטל עובדים — דיווח ובקשות</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/option-3.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+/* Type selection tiles */
+.type-tiles { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.type-tile {
+  background:var(--glass); border:2px solid var(--glass-b); border-radius:14px;
+  padding:16px 12px; text-align:center; cursor:pointer; transition:all 0.2s;
+}
+.type-tile:hover  { border-color:rgba(167,139,250,0.4); background:rgba(167,139,250,0.10); transform:translateY(-2px); }
+.type-tile.active { border-color:var(--accent); background:rgba(167,139,250,0.18); }
+.type-tile .tt-icon { font-size:28px; margin-bottom:8px; }
+.type-tile .tt-label { font-size:13px; font-weight:700; }
+.type-tile .tt-desc  { font-size:11px; color:var(--text2); margin-top:4px; }
+
+/* Steps */
+.step-bar { display:flex; align-items:center; gap:8px; margin-bottom:18px; }
+.step-item { display:flex; align-items:center; gap:6px; }
+.step-circle {
+  width:26px; height:26px; border-radius:50%; display:grid; place-items:center;
+  font-size:12px; font-weight:700; border:2px solid var(--glass-b); color:var(--text2);
+}
+.step-circle.active   { border-color:var(--accent); background:rgba(167,139,250,0.2); color:var(--accent); }
+.step-circle.done     { border-color:var(--accent3); background:rgba(52,211,153,0.2); color:var(--accent3); }
+.step-label { font-size:12px; color:var(--text2); }
+.step-line  { flex:1; height:1px; background:var(--glass-b); }
+
+/* Request cards */
+.req-card {
+  display:flex; align-items:flex-start; gap:12px; padding:12px;
+  border-radius:12px; border:1px solid var(--glass-b); background:var(--glass);
+  margin-bottom:8px;
+}
+.req-icon   { font-size:24px; flex-shrink:0; }
+.req-title  { font-size:13px; font-weight:700; }
+.req-meta   { font-size:11px; color:var(--text2); margin-top:3px; }
+.req-status {
+  margin-right:auto; font-size:11px; font-weight:700; padding:3px 10px;
+  border-radius:10px; flex-shrink:0;
+}
+.status-open    { background:rgba(251,191,36,0.15); color:#fbbf24; }
+.status-done    { background:rgba(52,211,153,0.15); color:#34d399; }
+.status-pending { background:rgba(167,139,250,0.15); color:#a78bfa; }
+
+/* Submit button */
+.submit-btn {
+  width:100%; padding:12px; border-radius:12px;
+  background:linear-gradient(135deg,#a78bfa,#67e8f9); border:none;
+  color:#fff; font-size:15px; font-weight:800; font-family:inherit;
+  cursor:pointer; transition:opacity 0.2s;
+}
+.submit-btn:hover { opacity:0.9; }
+.submit-btn:disabled { opacity:0.5; cursor:not-allowed; }
+</style>
+</head>
+<body>
+
+<script>(function(){var t;try{t=localStorage.getItem('portal-theme');}catch(e){}if(!t)try{t=new URLSearchParams(window.location.search).get('t');}catch(e){}if(t==='light')document.documentElement.classList.add('light-mode');})();</script>
+
+<nav class="icon-dock">
+  <div class="dock-logo">🏛️</div>
+  <a class="dock-item"        href="index.html"         data-label="דף הבית">🏠</a>
+  <a class="dock-item"        href="announcements.html" data-label="עדכונים">📢</a>
+  <a class="dock-item"        href="events.html"        data-label="אירועים">📅</a>
+  <a class="dock-item"        href="info.html"          data-label="מאגר מידע">📚</a>
+  <a class="dock-item"        href="contacts.html"      data-label="ספר טלפונים">👥</a>
+  <a class="dock-item active" href="report.html"        data-label="דיווח ובקשות">📝</a>
+  <div class="dock-sep"></div>
+  <div class="dock-bottom"><div class="dock-user-av">י</div></div>
+</nav>
+
+<main class="bento-main">
+  <header class="command-bar">
+    <div class="cb-search"><span class="si">🔍</span><input type="text" placeholder="חיפוש בבקשות..."></div>
+    <div id="option-switcher-mount"></div>
+    <div id="discover-mount"></div>
+    <div id="walkme-trigger-mount"></div>
+    <div id="theme-toggle-mount"></div>
+  </header>
+
+  <div class="bento-grid">
+
+    <!-- TYPE SELECTION  (4) -->
+    <div class="bc bc-4">
+      <div class="step-bar" id="stepBar"></div>
+      <div id="stepContent"></div>
+    </div>
+
+    <!-- MY REQUESTS  (2) -->
+    <div class="bc bc-2" style="overflow:hidden;">
+      <div class="card-hdr">
+        <span class="card-ttl">📋 הבקשות שלי</span>
+        <span class="card-badge" id="reqCount">0</span>
+      </div>
+      <div class="scroll-inner" style="max-height:400px;" id="reqList">
+        <div style="text-align:center;color:var(--text2);padding:30px;font-size:13px;">אין בקשות פתוחות</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/store.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var D = PortalData;
+  var step = 1;
+  var selectedType = null;
+
+  var stepDefs = [
+    { num:1, label:'בחירת סוג' },
+    { num:2, label:'פרטים' },
+    { num:3, label:'אישור' }
+  ];
+
+  function renderStepBar() {
+    document.getElementById('stepBar').innerHTML = stepDefs.map(function (s, i) {
+      var st = s.num < step ? 'done' : (s.num === step ? 'active' : '');
+      return (i > 0 ? '<div class="step-line"></div>' : '') +
+        '<div class="step-item">' +
+        '<div class="step-circle ' + st + '">' + (s.num < step ? '✓' : s.num) + '</div>' +
+        '<span class="step-label">' + s.label + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  function renderStep1() {
+    document.getElementById('stepContent').innerHTML =
+      '<div style="margin-bottom:14px;font-size:14px;font-weight:600">בחר סוג פנייה:</div>' +
+      '<div class="type-tiles">' +
+      D.reportTypes.map(function (t) {
+        return '<div class="type-tile' + (selectedType && selectedType.id === t.id ? ' active' : '') + '" data-id="' + t.id + '">' +
+          '<div class="tt-icon">' + t.icon + '</div>' +
+          '<div class="tt-label">' + t.label + '</div>' +
+          '<div class="tt-desc">' + t.desc + '</div>' +
+          '</div>';
+      }).join('') + '</div>';
+    document.querySelectorAll('.type-tile').forEach(function (el) {
+      el.addEventListener('click', function () {
+        selectedType = D.reportTypes.find(function (t) { return t.id === el.dataset.id; });
+        document.querySelectorAll('.type-tile').forEach(function (e) { e.classList.remove('active'); });
+        el.classList.add('active');
+        setTimeout(function () { step = 2; renderAll(); }, 400);
+      });
+    });
+  }
+
+  function renderStep2() {
+    document.getElementById('stepContent').innerHTML =
+      '<div class="form-group">' +
+        '<label class="form-label">סוג הבקשה</label>' +
+        '<div class="form-input" style="display:flex;align-items:center;gap:10px;background:rgba(167,139,250,0.10);border-color:rgba(167,139,250,0.35);cursor:default;">' +
+          '<span style="font-size:20px">' + selectedType.icon + '</span>' +
+          '<span style="font-weight:700">' + selectedType.label + '</span>' +
+          '<span style="color:var(--text2);font-size:12px">— ' + selectedType.desc + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="form-group"><label class="form-label">כותרת הבקשה</label><input class="form-input" type="text" id="fTitle" placeholder="תאר בקצרה את הבעיה / הבקשה"></div>' +
+      '<div class="form-group"><label class="form-label">תיאור מפורט</label><textarea class="form-textarea" id="fDesc" placeholder="פרט ככל האפשר..."></textarea></div>' +
+      '<div class="form-group"><label class="form-label">עדיפות</label>' +
+      '<select class="form-select" id="fPriority"><option value="low">רגיל</option><option value="medium">בינוני</option><option value="high">דחוף</option></select></div>' +
+      '<div style="display:flex;gap:10px;margin-top:6px;">' +
+      '<button class="glass-btn" id="backBtn" style="flex:0 0 auto">← חזרה</button>' +
+      '<button class="submit-btn" id="submitBtn">שלח בקשה ✓</button></div>';
+
+    document.getElementById('backBtn').addEventListener('click', function () { step = 1; renderAll(); });
+    document.getElementById('submitBtn').addEventListener('click', function () {
+      var title = document.getElementById('fTitle').value.trim();
+      if (!title) { document.getElementById('fTitle').focus(); return; }
+      var req = {
+        id: Date.now(), type: selectedType.id, icon: selectedType.icon,
+        label: selectedType.label, title: title,
+        desc: document.getElementById('fDesc').value.trim(),
+        priority: document.getElementById('fPriority').value,
+        status: 'open', date: new Date().toLocaleDateString('he-IL')
+      };
+      var reqs = [];
+      try { reqs = JSON.parse(localStorage.getItem('portal-requests') || '[]'); } catch(e) {}
+      reqs.unshift(req);
+      try { localStorage.setItem('portal-requests', JSON.stringify(reqs)); } catch(e) {}
+      step = 3; selectedType = null; renderAll(); renderRequests();
+    });
+  }
+
+  function renderStep3() {
+    document.getElementById('stepContent').innerHTML =
+      '<div style="text-align:center;padding:40px 20px;">' +
+      '<div style="font-size:60px;margin-bottom:16px;">✅</div>' +
+      '<h3 style="font-size:20px;font-weight:800;margin-bottom:8px;">הבקשה נשלחה בהצלחה!</h3>' +
+      '<p style="color:var(--text2);font-size:13px;margin-bottom:24px;">צוות הטיפול יחזור אליך בהקדם.</p>' +
+      '<button class="glass-btn accent" id="newReq">+ בקשה חדשה</button>' +
+      '</div>';
+    document.getElementById('newReq').addEventListener('click', function () { step = 1; renderAll(); });
+  }
+
+  function renderAll() {
+    renderStepBar();
+    if (step === 1) renderStep1();
+    else if (step === 2) renderStep2();
+    else renderStep3();
+  }
+
+  function renderRequests() {
+    var reqs = [];
+    try { reqs = JSON.parse(localStorage.getItem('portal-requests') || '[]'); } catch(e) {}
+    document.getElementById('reqCount').textContent = reqs.length;
+    if (!reqs.length) {
+      document.getElementById('reqList').innerHTML = '<div style="text-align:center;color:var(--text2);padding:30px;font-size:13px;">אין בקשות פתוחות</div>';
+      return;
+    }
+    var statusMap = { open: 'status-open', pending: 'status-pending', done: 'status-done' };
+    var statusLabel = { open: 'פתוח', pending: 'בטיפול', done: 'הושלם' };
+    document.getElementById('reqList').innerHTML = reqs.slice(0,10).map(function (r) {
+      return '<div class="req-card">' +
+        '<span class="req-icon">' + (r.icon||'📝') + '</span>' +
+        '<div><div class="req-title">' + r.title + '</div><div class="req-meta">' + r.label + ' · ' + r.date + '</div></div>' +
+        '<span class="req-status ' + (statusMap[r.status]||'status-open') + '">' + (statusLabel[r.status]||'פתוח') + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  renderAll();
+  renderRequests();
+  window.addEventListener('pageshow', renderRequests);
+});
+</script>
+<script src="../shared/theme.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+var wm3 = { accent:'#a78bfa', bg:'rgba(10,8,32,0.97)', border:'rgba(167,139,250,0.22)', textPrimary:'#f0f0ff', textSecondary:'rgba(240,240,255,0.6)' };
+var walkme = new WalkMe([
+  { target: '#stepBar',      title: 'תהליך שלושה שלבים', text: 'שלב 1: בחרו סוג פנייה. שלב 2: מלאו פרטים. שלב 3: אישור ושליחה.' },
+  { target: '#stepContent',  title: 'בחרו סוג פנייה',    text: 'לחצו על הכרטיס המתאים — תקלה טכנית, רכש, אבטחה, תלונה ועוד.' },
+  { target: '#reqList',      title: 'הבקשות שלי 📋',     text: 'כל הבקשות שהגשתם מוצגות כאן עם סטטוס עדכני.' }
+], wm3);
+var wmm = document.getElementById('walkme-trigger-mount');
+if (wmm) wmm.appendChild(WalkMe.createTriggerButton());
+</script>
+</body>
+</html>

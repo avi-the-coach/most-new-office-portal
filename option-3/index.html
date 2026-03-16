@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>פורטל עובדים — דף הבית</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/option-3.css">
+<link rel="stylesheet" href="../shared/theme.css">
+</head>
+<body>
+
+<!-- ANTI-FLASH -->
+<script>(function(){var t;try{t=localStorage.getItem('portal-theme');}catch(e){}if(!t)try{t=new URLSearchParams(window.location.search).get('t');}catch(e){}if(t==='light')document.documentElement.classList.add('light-mode');})();</script>
+
+<!-- ICON DOCK -->
+<nav class="icon-dock">
+  <div class="dock-logo">🏛️</div>
+  <a class="dock-item active" href="index.html"         data-label="דף הבית">🏠</a>
+  <a class="dock-item"        href="announcements.html" data-label="עדכונים">📢</a>
+  <a class="dock-item"        href="events.html"        data-label="אירועים">📅</a>
+  <a class="dock-item"        href="info.html"          data-label="מאגר מידע">📚</a>
+  <a class="dock-item"        href="contacts.html"      data-label="ספר טלפונים">👥</a>
+  <a class="dock-item"        href="report.html"        data-label="דיווח ובקשות">📝</a>
+  <div class="dock-sep"></div>
+  <div class="dock-bottom">
+    <div class="dock-user-av">י</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main class="bento-main">
+
+  <!-- COMMAND BAR -->
+  <header class="command-bar">
+    <div class="cb-search">
+      <span class="si">🔍</span>
+      <input type="text" placeholder="חיפוש מהיר..." id="globalSearch">
+    </div>
+    <div id="option-switcher-mount"></div>
+    <div id="discover-mount"></div>
+    <div id="walkme-trigger-mount"></div>
+    <div id="theme-toggle-mount"></div>
+  </header>
+
+  <!-- BENTO GRID -->
+  <div class="bento-grid">
+
+    <!-- HERO  (4) -->
+    <div class="bc bc-4 hero-card">
+      <div class="hero-greeting">
+        <h2 id="heroGreeting">שלום, ישראל 👋</h2>
+        <p class="sub" id="heroSub">טוען...</p>
+      </div>
+      <div class="hero-meta">
+        <div class="hm-item">
+          <span class="val" id="statTickets">—</span>
+          <div class="lbl">פניות פתוחות</div>
+        </div>
+        <div class="hm-item">
+          <span class="val" id="statMsg">—</span>
+          <div class="lbl">הודעות חדשות</div>
+        </div>
+        <div class="hm-item">
+          <span class="val" id="statVac">—</span>
+          <div class="lbl">ימי חופשה</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BIRTHDAYS  (2) -->
+    <div class="bc bc-2">
+      <div class="card-hdr">
+        <span class="card-ttl">🎂 ימי הולדת</span>
+        <span class="card-badge" id="bdayCount">0</span>
+      </div>
+      <div id="bdayList"></div>
+    </div>
+
+    <!-- STAT CARDS  (2+2+2) -->
+    <div class="bc bc-2 stat-card purple">
+      <div class="sc-icon">🎫</div>
+      <div><div class="sc-val" id="s1">—</div><div class="sc-lbl">פניות IT פתוחות</div></div>
+    </div>
+    <div class="bc bc-2 stat-card cyan">
+      <div class="sc-icon">📋</div>
+      <div><div class="sc-val" id="s2">—</div><div class="sc-lbl">בקשות ממתינות</div></div>
+    </div>
+    <div class="bc bc-2 stat-card green">
+      <div class="sc-icon">📅</div>
+      <div><div class="sc-val" id="s3">2</div><div class="sc-lbl">אירועים השבוע</div></div>
+    </div>
+
+    <!-- QUICK ACCESS  (3) -->
+    <div class="bc bc-3">
+      <div class="card-hdr"><span class="card-ttl">⚡ גישה מהירה</span></div>
+      <div class="qa-grid" id="qaGrid"></div>
+    </div>
+
+    <!-- ANNOUNCEMENTS  (3) -->
+    <div class="bc bc-3">
+      <div class="card-hdr">
+        <span class="card-ttl">📢 עדכונים</span>
+        <a href="announcements.html" class="glass-btn">הכל</a>
+      </div>
+      <div id="annList"></div>
+    </div>
+
+    <!-- EVENTS ROW  (6) -->
+    <div class="bc bc-6">
+      <div class="card-hdr">
+        <span class="card-ttl">📅 אירועים קרובים</span>
+        <a href="events.html" class="glass-btn">לוח שנה מלא</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" id="eventsList"></div>
+    </div>
+
+  </div><!-- /bento-grid -->
+</main>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/store.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var D = PortalData;
+  var days   = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  var months = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  var now = new Date();
+
+  // Hero
+  document.getElementById('heroGreeting').textContent = 'שלום, ' + D.user.firstName + ' 👋';
+  document.getElementById('heroSub').textContent = 'יום ' + days[now.getDay()] + ', ' + now.getDate() + ' ב' + months[now.getMonth()] + ' ' + now.getFullYear() + ' · ' + D.user.unit;
+  document.getElementById('statTickets').textContent = D.stats.openTickets;
+  document.getElementById('statMsg').textContent     = D.stats.unreadMessages;
+  document.getElementById('statVac').textContent     = D.stats.daysUntilVacation;
+  document.getElementById('s1').textContent = D.stats.openTickets;
+  document.getElementById('s2').textContent = D.stats.pendingRequests;
+
+  // Birthdays
+  var gradients = [
+    'linear-gradient(135deg,#a78bfa,#67e8f9)',
+    'linear-gradient(135deg,#67e8f9,#34d399)',
+    'linear-gradient(135deg,#f87171,#fbbf24)'
+  ];
+  document.getElementById('bdayCount').textContent = D.birthdays.length;
+  document.getElementById('bdayList').innerHTML = D.birthdays.map(function (b, i) {
+    return '<div class="bday-item">' +
+      '<div class="bday-av" style="background:' + gradients[i % gradients.length] + '">' + b.name.charAt(0) + '</div>' +
+      '<div><div class="bday-name">' + b.name + '</div><div style="font-size:11px;color:var(--text2)">' + b.date + '</div></div>' +
+      '<div class="bday-days">בעוד ' + b.daysLeft + ' ימים</div></div>';
+  }).join('');
+
+  // Quick access
+  document.getElementById('qaGrid').innerHTML = D.quickLinks.map(function (l) {
+    return '<a class="qa-item" href="' + l.url + '"><span class="qi">' + l.icon + '</span><span class="ql">' + l.name + '</span></a>';
+  }).join('');
+
+  // Announcements
+  var dotColors = { high: '#f87171', medium: '#fbbf24', low: '#34d399' };
+  document.getElementById('annList').innerHTML = D.announcements.slice(0, 3).map(function (a) {
+    return '<div class="ann-item">' +
+      '<div class="ann-dot" style="background:' + (dotColors[a.priority] || '#888') + '"></div>' +
+      '<div><div class="ann-title">' + a.title + '</div><div class="ann-meta">' + a.author + ' · ' + a.date + '</div></div>' +
+      '</div>';
+  }).join('');
+
+  // Events
+  var mon3 = ['ינו','פבר','מרץ','אפר','מאי','יוני','יולי','אוג','ספט','אוק','נוב','דצמ'];
+  var typeLabels = { meeting:'ישיבה', training:'הדרכה', deadline:'דד-ליין', holiday:'חג', event:'אירוע' };
+  document.getElementById('eventsList').innerHTML = D.events.slice(0, 4).map(function (e) {
+    var d = new Date(e.date);
+    return '<div class="event-item">' +
+      '<div class="event-date-box"><div class="eday">' + d.getDate() + '</div><div class="emon">' + mon3[d.getMonth()] + '</div></div>' +
+      '<div><div class="event-ttl">' + e.title + '</div>' +
+      '<div class="event-sub">' + (e.time ? e.time + ' · ' : '') + (e.location || '') + '</div>' +
+      '<span class="type-tag type-' + e.type + '">' + (typeLabels[e.type] || e.type) + '</span></div>' +
+      '</div>';
+  }).join('');
+});
+</script>
+<script src="../shared/theme.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+var wm3 = { accent:'#a78bfa', bg:'rgba(10,8,32,0.97)', border:'rgba(167,139,250,0.22)', textPrimary:'#f0f0ff', textSecondary:'rgba(240,240,255,0.6)' };
+var walkme = new WalkMe([
+  { target: '.icon-dock',           title: 'ניווט צד',        text: 'הדוק הצר עם אייקונים — לחץ על כל אייקון לניווט בין הדפים. רחף להצגת תווית.' },
+  { target: '.hero-card',           title: 'ברוכים הבאים 👋',  text: 'כרטיס הגיבור — ברכה אישית, ומספרים חשובים: פניות, הודעות, ימי חופשה.' },
+  { target: '.stat-card.purple',    title: 'כרטיסי סטטוס',    text: 'שלושה כרטיסי מצב — פניות IT, בקשות ממתינות ואירועים השבוע.' },
+  { target: '#qaGrid',              title: 'גישה מהירה ⚡',    text: 'קיצורי דרך לכלים הכי שימושיים — מרכב"ה, TopDesk, Drive ועוד.' },
+  { target: '#annList',             title: 'עדכונים אחרונים',  text: 'שלושת העדכונים האחרונים. נקודה צבעונית = דחיפות: אדום/צהוב/ירוק.' },
+  { target: '#eventsList',          title: 'אירועים קרובים',   text: 'ארבעת האירועים הבאים עם תאריך, שעה וסוג.' },
+  { target: '#bdayList',            title: 'ימי הולדת 🎂',     text: 'עמיתים שיום הולדתם מתקרב — בעוד כמה ימים.' },
+  { target: '#theme-toggle-mount',  title: 'מצב תצוגה',        text: 'עבור בין Bento Glass כהה (gradient כחול-סגול) לבהיר (lavender).' }
+], wm3);
+var wmm = document.getElementById('walkme-trigger-mount');
+if (wmm) wmm.appendChild(WalkMe.createTriggerButton());
+</script>
+</body>
+</html>

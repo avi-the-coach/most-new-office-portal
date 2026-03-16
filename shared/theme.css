@@ -1,0 +1,184 @@
+/* ============================================
+   THEME — Dark mode improvements + Light mode
+   ============================================ */
+
+/* DARK MODE: improved contrast (override :root defaults) */
+:root {
+  --text1: #f0f6ff;
+  --text2: #b0c8e8;
+  --text3: #6a8ab0;
+}
+
+/* LIGHT MODE overrides */
+html.light-mode {
+  --bg:      #f0f4f9;
+  --bg2:     #ffffff;
+  --bg3:     #e8eef6;
+  --bg4:     #dde6f0;
+  --border:  #cdd8e8;
+  --accent:  #0284c7;
+  --accent2: #7c3aed;
+  --text1:   #0f172a;
+  --text2:   #334155;
+  --text3:   #64748b;
+  --success: #059669;
+  --warning: #d97706;
+  --danger:  #dc2626;
+}
+
+/* Light mode — component-level fixes */
+html.light-mode .topbar {
+  background: #ffffff !important;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  border-bottom-color: var(--border) !important;
+}
+html.light-mode .sidebar {
+  background: #ffffff !important;
+  border-color: var(--border) !important;
+}
+html.light-mode .main {
+  background: var(--bg) !important;
+}
+html.light-mode .announcement-card,
+html.light-mode .stat-card,
+html.light-mode .widget,
+html.light-mode .form-card,
+html.light-mode .calendar-card,
+html.light-mode .confirm-summary,
+html.light-mode .filter-bar,
+html.light-mode .page-hero,
+html.light-mode .greeting-bar,
+html.light-mode .contact-card,
+html.light-mode .contact-row,
+html.light-mode .doc-item,
+html.light-mode .cat-card,
+html.light-mode .ann-card,
+html.light-mode .unit-card,
+html.light-mode .qlink,
+html.light-mode .cal-cell,
+html.light-mode .type-card {
+  background: var(--bg2) !important;
+  border-color: var(--border) !important;
+}
+html.light-mode .cal-cell {
+  background: var(--bg3) !important;
+}
+html.light-mode .cal-cell.today {
+  background: rgba(2,132,199,0.06) !important;
+  border-color: var(--accent) !important;
+}
+html.light-mode .sidebar-link.active {
+  background: rgba(2,132,199,0.1) !important;
+}
+html.light-mode input,
+html.light-mode textarea,
+html.light-mode select {
+  background: var(--bg3) !important;
+  color: var(--text1) !important;
+  border-color: var(--border) !important;
+}
+html.light-mode .greeting-bar {
+  background: linear-gradient(135deg, #e8f4ff, #f0f7ff) !important;
+}
+html.light-mode .page-hero {
+  background: linear-gradient(135deg, #e8f4ff, #f0f7ff) !important;
+}
+html.light-mode .topbar-icon-btn {
+  background: var(--bg3) !important;
+  border-color: var(--border) !important;
+}
+html.light-mode .topbar-icon-btn:hover {
+  border-color: var(--accent) !important;
+}
+html.light-mode .logo-text { color: #0f172a !important; }
+html.light-mode .user-name { color: #0f172a !important; }
+html.light-mode .ann-title,
+html.light-mode .contact-name,
+html.light-mode .doc-title,
+html.light-mode .event-title,
+html.light-mode .unit-name,
+html.light-mode .bday-name,
+html.light-mode .cat-name,
+html.light-mode .wm-title,
+html.light-mode .greeting-text h2 { color: var(--text1) !important; }
+html.light-mode .btn-ghost {
+  color: var(--text2) !important;
+  border-color: var(--border) !important;
+}
+html.light-mode .btn-ghost:hover {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+html.light-mode .filter-chip {
+  color: var(--text2) !important;
+  border-color: var(--border) !important;
+}
+html.light-mode .sidebar-link { color: var(--text2) !important; }
+html.light-mode .sidebar-link:hover { background: var(--bg3) !important; color: var(--text1) !important; }
+html.light-mode .progress-bar { background: var(--bg2) !important; }
+html.light-mode .summary-pill { background: var(--bg2) !important; border-color: var(--border) !important; }
+html.light-mode .event-date-badge { background: var(--bg3) !important; border-color: var(--border) !important; }
+html.light-mode .view-btn { background: var(--bg3) !important; border-color: var(--border) !important; }
+html.light-mode .cal-dow { color: var(--text3) !important; }
+
+/* ============================================
+   THEME TOGGLE SWITCH (shared across all demos)
+   ============================================ */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+  user-select: none;
+}
+.theme-toggle-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.theme-switch-track {
+  width: 30px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--border);
+  position: relative;
+  transition: background 0.25s;
+  flex-shrink: 0;
+}
+html.light-mode .theme-switch-track {
+  background: var(--accent);
+}
+.theme-switch-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text2);
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  transition: all 0.25s;
+}
+html.light-mode .theme-switch-thumb {
+  right: auto;
+  left: 2px;
+  background: #fff;
+}
+
+/* ============================================
+   WALKME — light mode fixes
+   ============================================ */
+html.light-mode {
+  --wm-bg: #ffffff;
+  --wm-border: #cdd8e8;
+  --wm-text-primary: #0f172a;
+  --wm-text-secondary: #475569;
+}

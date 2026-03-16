@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>פורטל עובדים — עדכונים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/option-3.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+.ann-full-card {
+  padding:16px; border-radius:12px; border:1px solid var(--glass-b);
+  background:var(--glass); backdrop-filter:var(--blur);
+  margin-bottom:10px; cursor:pointer; transition:all 0.2s;
+}
+.ann-full-card:hover { border-color:rgba(167,139,250,0.4); background:var(--glass-hov); }
+.ann-full-card .afc-head { display:flex; align-items:flex-start; gap:10px; }
+.ann-full-card .afc-dot  { width:9px; height:9px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+.ann-full-card .afc-title { font-size:14px; font-weight:700; flex:1; }
+.ann-full-card .afc-excerpt { font-size:12px; color:var(--text2); margin-top:6px; line-height:1.5; }
+.ann-full-card .afc-foot { display:flex; align-items:center; gap:8px; margin-top:8px; }
+.ann-full-card .afc-date   { font-size:11px; color:var(--text3); }
+.ann-full-card .afc-author { font-size:11px; color:var(--text2); }
+.pri-high   { color:#f87171; }
+.pri-medium { color:#fbbf24; }
+.pri-low    { color:#34d399; }
+.featured-card {
+  background:linear-gradient(135deg,rgba(167,139,250,0.20),rgba(103,232,249,0.10));
+  border-color:rgba(167,139,250,0.35); padding:22px; border-radius:16px;
+}
+.featured-card .feat-label { font-size:10px; font-weight:700; color:var(--accent); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; }
+.featured-card h3 { font-size:20px; font-weight:800; line-height:1.3; }
+.featured-card p  { color:var(--text2); font-size:13px; margin-top:8px; line-height:1.6; }
+.stats-mini { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.stats-mini-item { background:var(--glass); border:1px solid var(--glass-b); border-radius:12px; padding:14px; text-align:center; }
+.stats-mini-item .smv { font-size:24px; font-weight:800; color:var(--accent); }
+.stats-mini-item .sml { font-size:11px; color:var(--text2); margin-top:4px; }
+.cat-pills { display:flex; flex-wrap:wrap; gap:8px; }
+</style>
+</head>
+<body>
+
+<script>(function(){var t;try{t=localStorage.getItem('portal-theme');}catch(e){}if(!t)try{t=new URLSearchParams(window.location.search).get('t');}catch(e){}if(t==='light')document.documentElement.classList.add('light-mode');})();</script>
+
+<nav class="icon-dock">
+  <div class="dock-logo">🏛️</div>
+  <a class="dock-item"        href="index.html"         data-label="דף הבית">🏠</a>
+  <a class="dock-item active" href="announcements.html" data-label="עדכונים">📢</a>
+  <a class="dock-item"        href="events.html"        data-label="אירועים">📅</a>
+  <a class="dock-item"        href="info.html"          data-label="מאגר מידע">📚</a>
+  <a class="dock-item"        href="contacts.html"      data-label="ספר טלפונים">👥</a>
+  <a class="dock-item"        href="report.html"        data-label="דיווח ובקשות">📝</a>
+  <div class="dock-sep"></div>
+  <div class="dock-bottom"><div class="dock-user-av">י</div></div>
+</nav>
+
+<main class="bento-main">
+  <header class="command-bar">
+    <div class="cb-search"><span class="si">🔍</span><input type="text" placeholder="חיפוש בעדכונים..." id="annSearch"></div>
+    <div id="option-switcher-mount"></div>
+    <div id="discover-mount"></div>
+    <div id="walkme-trigger-mount"></div>
+    <div id="theme-toggle-mount"></div>
+  </header>
+
+  <div class="bento-grid">
+
+    <!-- FEATURED  (4) -->
+    <div class="bc bc-4 featured-card" id="featuredAnn">
+      <div class="feat-label">🔴 עדכון דחוף</div>
+      <h3>טוען...</h3>
+    </div>
+
+    <!-- MINI STATS  (2) -->
+    <div class="bc bc-2">
+      <div class="card-hdr"><span class="card-ttl">📊 סיכום</span></div>
+      <div class="stats-mini" id="annStats"></div>
+    </div>
+
+    <!-- FILTER  (2) -->
+    <div class="bc bc-2">
+      <div class="card-hdr"><span class="card-ttl">🏷️ קטגוריות</span></div>
+      <div class="cat-pills" id="catPills"></div>
+    </div>
+
+    <!-- LIST  (4) -->
+    <div class="bc bc-4" style="overflow:hidden;">
+      <div class="card-hdr">
+        <span class="card-ttl">📋 כל העדכונים</span>
+        <span class="card-badge" id="annCount">0</span>
+      </div>
+      <div class="scroll-inner" style="max-height:320px;" id="annList"></div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/store.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var D = PortalData;
+  var dotColors = { high: '#f87171', medium: '#fbbf24', low: '#34d399' };
+  var priLabels = { high: 'דחוף', medium: 'בינוני', low: 'רגיל' };
+  var currentCat = 'הכל';
+
+  // Featured
+  var feat = D.announcements.find(function (a) { return a.priority === 'high'; }) || D.announcements[0];
+  document.getElementById('featuredAnn').innerHTML =
+    '<div class="feat-label">🔴 ' + priLabels[feat.priority] + ' — ' + feat.category + '</div>' +
+    '<h3>' + feat.title + '</h3>' +
+    '<p>' + feat.excerpt + '</p>' +
+    '<div style="margin-top:14px;font-size:12px;color:var(--text2)">' + feat.author + ' · ' + feat.date + '</div>';
+
+  // Mini stats
+  var cats = {};
+  D.announcements.forEach(function (a) { cats[a.category] = (cats[a.category] || 0) + 1; });
+  var high = D.announcements.filter(function (a) { return a.priority === 'high'; }).length;
+  document.getElementById('annStats').innerHTML =
+    '<div class="stats-mini-item"><div class="smv">' + D.announcements.length + '</div><div class="sml">סה"כ</div></div>' +
+    '<div class="stats-mini-item"><div class="smv" style="color:#f87171">' + high + '</div><div class="sml">דחופים</div></div>' +
+    '<div class="stats-mini-item"><div class="smv">' + Object.keys(cats).length + '</div><div class="sml">קטגוריות</div></div>';
+
+  // Category pills
+  var allCats = ['הכל'].concat(Object.keys(cats));
+  function renderPills() {
+    document.getElementById('catPills').innerHTML = allCats.map(function (c) {
+      return '<span class="chip' + (c === currentCat ? ' active' : '') + '" data-cat="' + c + '">' + c + '</span>';
+    }).join('');
+    document.querySelectorAll('#catPills .chip').forEach(function (el) {
+      el.addEventListener('click', function () {
+        currentCat = this.dataset.cat;
+        renderPills();
+        renderList();
+      });
+    });
+  }
+
+  function renderList(query) {
+    var list = D.announcements.filter(function (a) {
+      var catOk = currentCat === 'הכל' || a.category === currentCat;
+      var qOk   = !query || a.title.includes(query) || a.excerpt.includes(query);
+      return catOk && qOk;
+    });
+    document.getElementById('annCount').textContent = list.length;
+    document.getElementById('annList').innerHTML = list.map(function (a) {
+      return '<div class="ann-full-card">' +
+        '<div class="afc-head"><div class="afc-dot" style="background:' + (dotColors[a.priority]||'#888') + '"></div>' +
+        '<div class="afc-title">' + a.title + '</div>' +
+        '<span style="font-size:10px;font-weight:700;color:' + (dotColors[a.priority]||'#888') + '">' + priLabels[a.priority] + '</span></div>' +
+        '<div class="afc-excerpt">' + a.excerpt + '</div>' +
+        '<div class="afc-foot"><span class="afc-author">' + a.author + '</span><span class="afc-date">· ' + a.date + '</span>' +
+        '<span class="chip" style="margin-right:auto;font-size:10px;padding:2px 8px">' + a.category + '</span></div>' +
+        '</div>';
+    }).join('');
+  }
+
+  document.getElementById('annSearch').addEventListener('input', function () {
+    renderList(this.value.trim());
+  });
+
+  renderPills();
+  renderList();
+});
+</script>
+<script src="../shared/theme.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+var wm3 = { accent:'#a78bfa', bg:'rgba(10,8,32,0.97)', border:'rgba(167,139,250,0.22)', textPrimary:'#f0f0ff', textSecondary:'rgba(240,240,255,0.6)' };
+var walkme = new WalkMe([
+  { target: '#featuredAnn',  title: 'עדכון מומלץ',      text: 'העדכון הדחוף ביותר מוצג בכרטיס הראשי עם רמת דחיפות וקטגוריה.' },
+  { target: '#annStats',     title: 'סיכום עדכונים 📊', text: 'מספר כולל, עדכונים דחופים ומספר קטגוריות — במבט אחד.' },
+  { target: '#catPills',     title: 'סינון קטגוריות',   text: 'לחץ על קטגוריה לסינון העדכונים. לחץ "הכל" לאיפוס.' },
+  { target: '#annList',      title: 'רשימת עדכונים',    text: 'כל עדכון עם כותרת, תיאור קצר, מחבר ותאריך. צבע הנקודה = דחיפות.' }
+], wm3);
+var wmm = document.getElementById('walkme-trigger-mount');
+if (wmm) wmm.appendChild(WalkMe.createTriggerButton());
+</script>
+</body>
+</html>

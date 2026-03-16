@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>פורטל עובדים — מאגר מידע</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/option-3.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+.search-hero {
+  background:linear-gradient(135deg,rgba(167,139,250,0.16),rgba(103,232,249,0.08));
+  border-color:rgba(167,139,250,0.3);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:28px; gap:16px;
+}
+.search-hero h2 { font-size:22px; font-weight:800; }
+.search-hero p  { color:var(--text2); font-size:13px; }
+.hero-search-wrap { position:relative; width:100%; max-width:500px; }
+.hero-search-wrap input {
+  width:100%; background:rgba(255,255,255,0.12); border:1px solid rgba(167,139,250,0.4);
+  border-radius:40px; padding:12px 46px 12px 20px;
+  color:var(--text1); font-size:15px; font-family:inherit; outline:none;
+  transition:all 0.2s;
+}
+.hero-search-wrap input:focus { border-color:var(--accent); background:rgba(255,255,255,0.18); }
+.hero-search-wrap input::placeholder { color:var(--text2); }
+.hero-search-wrap .hsi { position:absolute; right:16px; top:50%; transform:translateY(-50%); font-size:18px; }
+
+/* category card */
+.cat-card {
+  background:var(--glass); border:1px solid var(--glass-b); border-radius:14px;
+  padding:16px; text-align:center; cursor:pointer; transition:all 0.2s;
+}
+.cat-card:hover, .cat-card.active { border-color:rgba(167,139,250,0.4); background:rgba(167,139,250,0.12); transform:translateY(-2px); }
+.cat-card .cc-icon  { font-size:28px; margin-bottom:8px; }
+.cat-card .cc-name  { font-size:13px; font-weight:700; }
+.cat-card .cc-count { font-size:11px; color:var(--text2); margin-top:3px; }
+
+/* doc row */
+.doc-row {
+  display:flex; align-items:center; gap:12px; padding:10px 12px;
+  border-radius:10px; border:1px solid transparent; cursor:pointer;
+  transition:all 0.2s;
+}
+.doc-row:hover { background:var(--glass); border-color:var(--glass-b); }
+.doc-icon  { font-size:22px; flex-shrink:0; }
+.doc-title { font-size:13px; font-weight:600; flex:1; }
+.doc-meta  { font-size:11px; color:var(--text2); }
+.doc-reads { font-size:11px; color:var(--accent); font-weight:600; margin-right:auto; }
+</style>
+</head>
+<body>
+
+<script>(function(){var t;try{t=localStorage.getItem('portal-theme');}catch(e){}if(!t)try{t=new URLSearchParams(window.location.search).get('t');}catch(e){}if(t==='light')document.documentElement.classList.add('light-mode');})();</script>
+
+<nav class="icon-dock">
+  <div class="dock-logo">🏛️</div>
+  <a class="dock-item"        href="index.html"         data-label="דף הבית">🏠</a>
+  <a class="dock-item"        href="announcements.html" data-label="עדכונים">📢</a>
+  <a class="dock-item"        href="events.html"        data-label="אירועים">📅</a>
+  <a class="dock-item active" href="info.html"          data-label="מאגר מידע">📚</a>
+  <a class="dock-item"        href="contacts.html"      data-label="ספר טלפונים">👥</a>
+  <a class="dock-item"        href="report.html"        data-label="דיווח ובקשות">📝</a>
+  <div class="dock-sep"></div>
+  <div class="dock-bottom"><div class="dock-user-av">י</div></div>
+</nav>
+
+<main class="bento-main">
+  <header class="command-bar">
+    <div class="cb-search"><span class="si">🔍</span><input type="text" placeholder="חיפוש במסמכים..."></div>
+    <div id="option-switcher-mount"></div>
+    <div id="discover-mount"></div>
+    <div id="walkme-trigger-mount"></div>
+    <div id="theme-toggle-mount"></div>
+  </header>
+
+  <div class="bento-grid">
+
+    <!-- SEARCH HERO  (6) -->
+    <div class="bc bc-6 search-hero">
+      <h2>📚 מאגר הידע הארגוני</h2>
+      <p>חפש נהלים, מדריכים, טפסים ועוד</p>
+      <div class="hero-search-wrap">
+        <span class="hsi">🔍</span>
+        <input type="text" placeholder="חפש מסמך, נוהל, הדרכה..." id="docSearch">
+      </div>
+    </div>
+
+    <!-- CATEGORIES  (6 × bc-1) -->
+    <div class="bc bc-1 cat-card active" data-cat="הכל">
+      <div class="cc-icon">📂</div>
+      <div class="cc-name">הכל</div>
+      <div class="cc-count" id="totalCount">0</div>
+    </div>
+    <div class="bc bc-1 cat-card" data-cat="נהלים">
+      <div class="cc-icon">📜</div>
+      <div class="cc-name">נהלים</div>
+      <div class="cc-count">24</div>
+    </div>
+    <div class="bc bc-1 cat-card" data-cat="הדרכות">
+      <div class="cc-icon">🎓</div>
+      <div class="cc-name">הדרכות</div>
+      <div class="cc-count">18</div>
+    </div>
+    <div class="bc bc-1 cat-card" data-cat="בטחון מידע">
+      <div class="cc-icon">🔒</div>
+      <div class="cc-name">בטחון מידע</div>
+      <div class="cc-count">12</div>
+    </div>
+    <div class="bc bc-1 cat-card" data-cat="כלים ומערכות">
+      <div class="cc-icon">🛠️</div>
+      <div class="cc-name">כלים</div>
+      <div class="cc-count">31</div>
+    </div>
+    <div class="bc bc-1 cat-card" data-cat="כללי">
+      <div class="cc-icon">📋</div>
+      <div class="cc-name">כללי</div>
+      <div class="cc-count">15</div>
+    </div>
+
+    <!-- POPULAR  (3) -->
+    <div class="bc bc-3">
+      <div class="card-hdr">
+        <span class="card-ttl">🔥 הנצפים ביותר</span>
+      </div>
+      <div id="popularDocs"></div>
+    </div>
+
+    <!-- SEARCH RESULTS / ALL  (3) -->
+    <div class="bc bc-3">
+      <div class="card-hdr">
+        <span class="card-ttl">📋 תוצאות</span>
+        <span class="card-badge" id="resultsCount">0</span>
+      </div>
+      <div class="scroll-inner" style="max-height:280px;" id="docList"></div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/store.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var D = PortalData;
+  var currentCat = 'הכל';
+  var currentQ   = '';
+
+  document.getElementById('totalCount').textContent = D.knowledgeBase.length;
+
+  // Popular
+  var sorted = D.knowledgeBase.slice().sort(function (a, b) { return b.reads - a.reads; });
+  document.getElementById('popularDocs').innerHTML = sorted.slice(0, 5).map(function (doc) {
+    return '<div class="doc-row">' +
+      '<span class="doc-icon">' + doc.icon + '</span>' +
+      '<div class="doc-title">' + doc.title + '</div>' +
+      '<span class="doc-reads">👁 ' + doc.reads + '</span>' +
+      '</div>';
+  }).join('');
+
+  function renderDocs() {
+    var list = D.knowledgeBase.filter(function (doc) {
+      var catOk = currentCat === 'הכל' || doc.category === currentCat;
+      var qOk   = !currentQ || doc.title.toLowerCase().includes(currentQ.toLowerCase());
+      return catOk && qOk;
+    });
+    document.getElementById('resultsCount').textContent = list.length;
+    document.getElementById('docList').innerHTML = list.map(function (doc) {
+      return '<div class="doc-row">' +
+        '<span class="doc-icon">' + doc.icon + '</span>' +
+        '<div><div class="doc-title">' + doc.title + '</div><div class="doc-meta">' + doc.category + ' · עודכן ' + doc.updated + '</div></div>' +
+        '<span class="doc-reads">👁 ' + doc.reads + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  // Category cards
+  document.querySelectorAll('.cat-card').forEach(function (el) {
+    el.addEventListener('click', function () {
+      document.querySelectorAll('.cat-card').forEach(function (c) { c.classList.remove('active'); });
+      this.classList.add('active');
+      currentCat = this.dataset.cat;
+      renderDocs();
+    });
+  });
+
+  // Search
+  document.getElementById('docSearch').addEventListener('input', function () {
+    currentQ = this.value.trim();
+    renderDocs();
+  });
+
+  renderDocs();
+});
+</script>
+<script src="../shared/theme.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+var wm3 = { accent:'#a78bfa', bg:'rgba(10,8,32,0.97)', border:'rgba(167,139,250,0.22)', textPrimary:'#f0f0ff', textSecondary:'rgba(240,240,255,0.6)' };
+var walkme = new WalkMe([
+  { target: '.search-hero',    title: 'חיפוש מסמכים 🔍',  text: 'חפש לפי שם מסמך, נוהל, הדרכה — התוצאות מתעדכנות בזמן אמת.' },
+  { target: '.bc-1',           title: 'קטגוריות',          text: '6 קטגוריות ידע: נהלים, הדרכות, בטחון מידע ועוד. לחץ לסינון.' },
+  { target: '#popularDocs',    title: 'הנצפים ביותר 🔥',  text: 'המסמכים הפופולריים ביותר בארגון לפי מספר צפיות.' },
+  { target: '#docList',        title: 'תוצאות חיפוש',      text: 'רשימת מסמכים מסוננת. כולל קטגוריה, תאריך עדכון וצפיות.' }
+], wm3);
+var wmm = document.getElementById('walkme-trigger-mount');
+if (wmm) wmm.appendChild(WalkMe.createTriggerButton());
+</script>
+</body>
+</html>

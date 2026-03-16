@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>פורטל עובדים — ספר טלפונים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/option-3.css">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+.contacts-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+.contact-actions { display:flex; gap:6px; margin-top:6px; }
+.contact-btn {
+  flex:1; padding:5px; border-radius:8px; font-size:11px; font-weight:600;
+  border:1px solid var(--glass-b); background:var(--glass); color:var(--text2);
+  cursor:pointer; font-family:inherit; transition:all 0.2s; text-align:center;
+}
+.contact-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+.unit-bar {
+  display:flex; gap:8px; flex-wrap:wrap;
+}
+.unit-pill {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:5px 12px; border-radius:20px; font-size:11px; font-weight:600;
+  border:1px solid var(--glass-b); background:var(--glass); color:var(--text2);
+  cursor:pointer; transition:all 0.2s;
+}
+.unit-pill:hover, .unit-pill.active { border-color:var(--accent); color:var(--accent); background:rgba(167,139,250,0.12); }
+
+.no-results { text-align:center; color:var(--text2); padding:40px; font-size:14px; }
+</style>
+</head>
+<body>
+
+<script>(function(){var t;try{t=localStorage.getItem('portal-theme');}catch(e){}if(!t)try{t=new URLSearchParams(window.location.search).get('t');}catch(e){}if(t==='light')document.documentElement.classList.add('light-mode');})();</script>
+
+<nav class="icon-dock">
+  <div class="dock-logo">🏛️</div>
+  <a class="dock-item"        href="index.html"         data-label="דף הבית">🏠</a>
+  <a class="dock-item"        href="announcements.html" data-label="עדכונים">📢</a>
+  <a class="dock-item"        href="events.html"        data-label="אירועים">📅</a>
+  <a class="dock-item"        href="info.html"          data-label="מאגר מידע">📚</a>
+  <a class="dock-item active" href="contacts.html"      data-label="ספר טלפונים">👥</a>
+  <a class="dock-item"        href="report.html"        data-label="דיווח ובקשות">📝</a>
+  <div class="dock-sep"></div>
+  <div class="dock-bottom"><div class="dock-user-av">י</div></div>
+</nav>
+
+<main class="bento-main">
+  <header class="command-bar">
+    <div class="cb-search">
+      <span class="si">🔍</span>
+      <input type="text" placeholder="חיפוש לפי שם, תפקיד..." id="contactSearch">
+    </div>
+    <div id="option-switcher-mount"></div>
+    <div id="discover-mount"></div>
+    <div id="walkme-trigger-mount"></div>
+    <div id="theme-toggle-mount"></div>
+  </header>
+
+  <div class="bento-grid">
+
+    <!-- SEARCH + FILTER  (6) -->
+    <div class="bc bc-6" style="padding:14px 18px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span style="font-size:13px;font-weight:700;color:var(--text2)">👥 <span id="contactCount">0</span> אנשי קשר</span>
+      </div>
+      <div class="unit-bar" id="unitBar"></div>
+    </div>
+
+    <!-- CONTACTS GRID  (6) -->
+    <div class="bc bc-6" style="overflow:hidden;">
+      <div class="scroll-inner" style="max-height:460px;">
+        <div class="contacts-grid" id="contactsGrid"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../shared/data.js"></script>
+<script src="../shared/store.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var D = PortalData;
+  var avatarGrads = [
+    'linear-gradient(135deg,#a78bfa,#67e8f9)',
+    'linear-gradient(135deg,#67e8f9,#34d399)',
+    'linear-gradient(135deg,#f87171,#fbbf24)',
+    'linear-gradient(135deg,#fbbf24,#a78bfa)',
+    'linear-gradient(135deg,#34d399,#0ea5e9)',
+    'linear-gradient(135deg,#f43f5e,#a78bfa)'
+  ];
+
+  var currentUnit = 'הכל';
+  var currentQ    = '';
+
+  // Unit pills
+  var units = ['הכל'].concat(D.units.map(function (u) { return u.name; }));
+  function renderUnits() {
+    document.getElementById('unitBar').innerHTML = units.map(function (u) {
+      return '<span class="unit-pill' + (u === currentUnit ? ' active' : '') + '" data-unit="' + u + '">' + u + '</span>';
+    }).join('');
+    document.querySelectorAll('.unit-pill').forEach(function (el) {
+      el.addEventListener('click', function () {
+        currentUnit = this.dataset.unit;
+        renderUnits();
+        renderContacts();
+      });
+    });
+  }
+
+  function renderContacts() {
+    var list = D.contacts.filter(function (c) {
+      var uOk = currentUnit === 'הכל' || c.unit === currentUnit;
+      var qOk = !currentQ || c.name.includes(currentQ) || c.role.includes(currentQ) || c.unit.includes(currentQ);
+      return uOk && qOk;
+    });
+    document.getElementById('contactCount').textContent = list.length;
+    if (!list.length) {
+      document.getElementById('contactsGrid').innerHTML = '<div class="no-results" style="grid-column:span 4">לא נמצאו תוצאות</div>';
+      return;
+    }
+    document.getElementById('contactsGrid').innerHTML = list.map(function (c, i) {
+      return '<div class="contact-card">' +
+        '<div class="contact-av" style="background:' + avatarGrads[i % avatarGrads.length] + '">' + c.avatar + '</div>' +
+        '<div class="contact-name">' + c.name + '</div>' +
+        '<div class="contact-role">' + c.role + '</div>' +
+        '<div class="contact-unit">' + c.unit + '</div>' +
+        '<div class="contact-ext">שלוחה ' + c.ext + '</div>' +
+        '<div class="contact-actions">' +
+        '<div class="contact-btn">📞 שיחה</div>' +
+        '<div class="contact-btn">✉️ מייל</div>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  document.getElementById('contactSearch').addEventListener('input', function () {
+    currentQ = this.value.trim();
+    renderContacts();
+  });
+
+  renderUnits();
+  renderContacts();
+});
+</script>
+<script src="../shared/theme.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+var wm3 = { accent:'#a78bfa', bg:'rgba(10,8,32,0.97)', border:'rgba(167,139,250,0.22)', textPrimary:'#f0f0ff', textSecondary:'rgba(240,240,255,0.6)' };
+var walkme = new WalkMe([
+  { target: '#contactSearch',  title: 'חיפוש איש קשר 🔍',  text: 'חפש לפי שם, תפקיד או יחידה — הכרטיסים מתעדכנים בזמן אמת.' },
+  { target: '#unitBar',        title: 'סינון לפי יחידה',    text: 'לחץ על שם יחידה לסינון. לחץ "הכל" לאיפוס.' },
+  { target: '#contactsGrid',   title: 'כרטיסי אנשי קשר 👥', text: 'כל כרטיס מציג שם, תפקיד, יחידה ושלוחה. לחץ "שיחה" או "מייל" לפנייה ישירה.' }
+], wm3);
+var wmm = document.getElementById('walkme-trigger-mount');
+if (wmm) wmm.appendChild(WalkMe.createTriggerButton());
+</script>
+</body>
+</html>

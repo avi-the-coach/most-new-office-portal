@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>פורטל עובדים — דף הבית</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2f5;
+  --card: #fff;
+  --topbar-bg: #fff;
+  --nav-bg: #0e4d9b;
+  --border: #dde1e7;
+  --accent: #0e4d9b;
+  --accent-light: #e8effa;
+  --text1: #1a2b4a;
+  --text2: #5a6474;
+  --text3: #9ca3af;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --radius: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  --bg3: #edf0f5;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Heebo',sans-serif; background:var(--bg); color:var(--text1); direction:rtl; min-height:100vh; }
+
+/* ── HEADER BLOCK ── */
+.portal-header { position:sticky; top:0; z-index:100; }
+
+.topbar {
+  background:var(--topbar-bg);
+  border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:12px; padding:0 20px;
+  height:56px; box-shadow:var(--shadow);
+}
+.topbar-logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.logo-icon { width:36px; height:36px; border-radius:4px; overflow:hidden; display:grid; place-items:center; background:#0e4d9b; font-size:18px; color:#fff; }
+.logo-text { font-size:14px; font-weight:800; color:var(--accent); line-height:1.2; }
+.logo-sub { font-size:10px; color:var(--text2); }
+.topbar-divider { width:1px; height:32px; background:var(--border); flex-shrink:0; }
+.topbar-search { flex:1; max-width:340px; position:relative; }
+.topbar-search input {
+  width:100%; background:#f8f9fb; border:1px solid var(--border);
+  border-radius:20px; padding:7px 36px 7px 14px; color:var(--text1); font-size:13px;
+  font-family:inherit; transition:all 0.2s; direction:rtl;
+}
+.topbar-search input:focus { outline:none; border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(14,77,155,0.08); }
+.topbar-search input::placeholder { color:var(--text3); }
+.topbar-search .search-icon { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text3); font-size:13px; pointer-events:none; }
+.topbar-actions { margin-right:auto; display:flex; align-items:center; gap:8px; }
+.topbar-icon-btn { width:34px; height:34px; border-radius:50%; border:none; background:transparent; color:var(--text2); cursor:pointer; display:grid; place-items:center; font-size:16px; position:relative; transition:background 0.2s; }
+.topbar-icon-btn:hover { background:var(--bg); color:var(--accent); }
+.badge { position:absolute; top:0; right:0; width:15px; height:15px; background:var(--danger); border-radius:50%; font-size:8px; font-weight:700; display:grid; place-items:center; color:#fff; border:2px solid #fff; }
+.topbar-user { display:flex; align-items:center; gap:8px; cursor:pointer; padding:5px 10px; border-radius:20px; transition:background 0.2s; }
+.topbar-user:hover { background:var(--bg); }
+.user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#0e4d9b,#1565c0); display:grid; place-items:center; font-size:13px; font-weight:700; color:#fff; flex-shrink:0; }
+.user-name { font-size:13px; font-weight:600; color:var(--text1); }
+.user-role { font-size:10px; color:var(--text2); }
+
+/* ── TOP NAV ── */
+.topnav { background:var(--nav-bg); }
+.topnav-inner {
+  max-width:1200px; margin:0 auto; padding:0 20px;
+  display:flex; gap:0;
+}
+.topnav-link {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:11px 16px; color:rgba(255,255,255,0.8); text-decoration:none;
+  font-size:13px; font-weight:600; border-bottom:3px solid transparent;
+  transition:all 0.15s; white-space:nowrap;
+}
+.topnav-link:hover { color:#fff; background:rgba(255,255,255,0.1); }
+.topnav-link.active { color:#fff; border-bottom-color:#fff; background:rgba(255,255,255,0.12); }
+
+/* ── MAIN ── */
+.main { padding:24px 20px; }
+.content-wrap { max-width:1200px; margin:0 auto; }
+
+/* ── GREETING ── */
+.greeting-bar {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  border-right:4px solid var(--accent);
+  padding:18px 24px; margin-bottom:20px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  box-shadow:var(--shadow);
+}
+.greeting-text h2 { font-size:20px; font-weight:700; color:var(--text1); }
+.greeting-text p { font-size:13px; color:var(--text2); margin-top:2px; }
+.greeting-time { font-size:12px; color:var(--text3); margin-top:4px; }
+.greeting-actions { display:flex; gap:8px; flex-shrink:0; }
+
+/* ── STATS ── */
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+.stat-card {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px 18px; display:flex; align-items:center; gap:14px;
+  box-shadow:var(--shadow); transition:border-color 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover { border-color:var(--accent); box-shadow:0 2px 8px rgba(14,77,155,0.1); }
+.stat-icon { width:44px; height:44px; border-radius:var(--radius); display:grid; place-items:center; font-size:20px; flex-shrink:0; }
+.stat-num { font-size:26px; font-weight:800; color:var(--text1); line-height:1; }
+.stat-label { font-size:12px; color:var(--text2); margin-top:2px; }
+
+/* ── CONTENT GRID ── */
+.content-grid { display:grid; grid-template-columns:1fr 300px; gap:16px; margin-bottom:20px; }
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.section-title { font-size:14px; font-weight:700; color:var(--text1); display:flex; align-items:center; gap:8px; }
+.section-title::before { content:''; display:inline-block; width:4px; height:16px; background:var(--accent); border-radius:2px; }
+.section-link { font-size:13px; color:var(--accent); text-decoration:none; font-weight:500; }
+.section-link:hover { text-decoration:underline; }
+
+/* ── ANNOUNCEMENTS ── */
+.announcements-list { display:flex; flex-direction:column; gap:8px; }
+.announcement-card {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:12px 16px; display:flex; gap:12px; align-items:flex-start;
+  box-shadow:var(--shadow); transition:border-color 0.2s;
+}
+.announcement-card:hover { border-color:var(--accent); }
+.ann-priority { width:4px; border-radius:2px; flex-shrink:0; align-self:stretch; min-height:40px; }
+.ann-priority.high { background:var(--danger); }
+.ann-priority.medium { background:var(--warning); }
+.ann-priority.low { background:var(--success); }
+.ann-body { flex:1; }
+.ann-title { font-size:14px; font-weight:600; color:var(--text1); margin-bottom:3px; }
+.ann-excerpt { font-size:12.5px; color:var(--text2); line-height:1.5; }
+.ann-meta { display:flex; gap:10px; margin-top:6px; align-items:center; }
+.ann-date { font-size:11px; color:var(--text3); }
+.ann-cat { font-size:11px; color:var(--accent); background:var(--accent-light); padding:2px 8px; border-radius:10px; }
+
+/* ── RIGHT COLUMN ── */
+.right-col { display:flex; flex-direction:column; gap:12px; }
+.widget {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px 16px; box-shadow:var(--shadow);
+}
+.widget-title { font-size:12px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:12px; }
+
+/* ── QUICK LINKS ── */
+.quicklinks-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.qlink {
+  background:var(--bg); border:1px solid var(--border); border-radius:var(--radius);
+  padding:10px 6px; text-align:center; cursor:pointer; text-decoration:none;
+  transition:all 0.2s; display:block;
+}
+.qlink:hover { border-color:var(--accent); background:var(--accent-light); }
+.qlink .qicon { font-size:18px; margin-bottom:4px; display:block; }
+.qlink .qname { font-size:11px; font-weight:600; color:var(--text1); display:block; }
+
+/* ── BIRTHDAYS ── */
+.birthday-item { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); }
+.birthday-item:last-child { border-bottom:none; }
+.bday-avatar { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#7c3aed,#4f46e5); display:grid; place-items:center; font-size:11px; font-weight:700; color:#fff; flex-shrink:0; }
+.bday-name { font-size:13px; font-weight:600; color:var(--text1); }
+.bday-date { font-size:11px; color:var(--text2); }
+.bday-badge { margin-right:auto; font-size:11px; color:var(--warning); background:rgba(245,158,11,0.1); padding:2px 7px; border-radius:10px; white-space:nowrap; }
+
+/* ── EVENTS PREVIEW ── */
+.event-item { display:flex; gap:10px; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); }
+.event-item:last-child { border-bottom:none; }
+.event-date-badge { background:var(--accent); border-radius:var(--radius); padding:4px 8px; text-align:center; min-width:38px; flex-shrink:0; }
+.event-day { font-size:14px; font-weight:800; color:#fff; line-height:1; }
+.event-month { font-size:9px; color:rgba(255,255,255,0.8); text-transform:uppercase; }
+.event-title { font-size:13px; font-weight:600; color:var(--text1); }
+.event-time { font-size:11px; color:var(--text2); margin-top:1px; }
+.event-type-dot { width:6px; height:6px; border-radius:50%; margin-right:auto; flex-shrink:0; }
+
+/* ── MY REQUESTS ── */
+.req-item { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); }
+.req-item:last-child { border-bottom:none; }
+
+/* ── UNITS ── */
+.units-section { margin-top:0; }
+.units-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(130px,1fr)); gap:10px; }
+.unit-card {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px; text-align:center; cursor:pointer; text-decoration:none; display:block;
+  box-shadow:var(--shadow); transition:all 0.2s;
+}
+.unit-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 4px 12px rgba(14,77,155,0.1); }
+.unit-icon { font-size:22px; margin-bottom:6px; }
+.unit-name { font-size:12px; font-weight:600; color:var(--text1); }
+.unit-members { font-size:10px; color:var(--text3); margin-top:2px; }
+
+/* ── BTNS ── */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:8px 18px; border-radius:4px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.2s; border:none; text-decoration:none; }
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover { background:#0a3d7a; }
+.btn-ghost { background:transparent; border:1.5px solid var(--border); color:var(--text2); }
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+
+@media(max-width:1024px) { .stats-row { grid-template-columns:repeat(2,1fr); } .content-grid { grid-template-columns:1fr; } }
+@media(max-width:640px) { .stats-row { grid-template-columns:repeat(2,1fr); } .topnav-link span { display:none; } }
+
+/* ── DARK MODE override for option-2 ── */
+html:not(.light-mode) {
+  --bg: #0f1117;
+  --card: #1a1f2e;
+  --topbar-bg: #13182a;
+  --nav-bg: #0a3270;
+  --border: #27334d;
+  --accent: #4d8ef0;
+  --accent-light: rgba(77,142,240,0.12);
+  --text1: #e8edf8;
+  --text2: #8fa3c8;
+  --text3: #4a6080;
+  --bg3: #1e2535;
+  --shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+html:not(.light-mode) .topbar { background: var(--topbar-bg) !important; border-bottom-color: var(--border) !important; }
+html:not(.light-mode) .topnav { background: var(--nav-bg) !important; }
+html:not(.light-mode) .topbar-search input { background: var(--bg3) !important; color: var(--text1) !important; border-color: var(--border) !important; }
+html:not(.light-mode) .topbar-search input::placeholder { color: var(--text3) !important; }</style>
+<link rel="stylesheet" href="../shared/theme.css">
+</head>
+<body>
+
+<div class="portal-header">
+  <div class="topbar" id="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">🏛️</div>
+      <div>
+        <div class="logo-text">פורטל עובדים</div>
+        <div class="logo-sub">משרד החדשנות, המדע והטכנולוגיה</div>
+      </div>
+    </div>
+    <div class="topbar-divider"></div>
+    <div class="topbar-search" id="search-bar">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="חיפוש מסמכים, אנשי קשר, נהלים...">
+    </div>
+    <div id="option-switcher-mount"></div>
+    <div class="topbar-actions">
+      <div id="discover-mount"></div>
+      <div id="theme-toggle-mount"></div>
+      <div id="walkme-trigger-mount"></div>
+      <div class="topbar-icon-btn" title="התראות">🔔<span class="badge" id="notif-badge">7</span></div>
+      <div class="topbar-icon-btn" title="עזרה">❓</div>
+      <div class="topbar-user" id="user-area">
+        <div class="user-avatar" id="user-av"></div>
+        <div>
+          <div class="user-name" id="user-nm"></div>
+          <div class="user-role" id="user-rl"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="topnav">
+    <div class="topnav-inner">
+      <a class="topnav-link active" href="index.html"><span>🏠</span> דף הבית</a>
+      <a class="topnav-link" href="announcements.html"><span>📣</span> עדכונים</a>
+      <a class="topnav-link" href="events.html"><span>📅</span> אירועים</a>
+      <a class="topnav-link" href="info.html"><span>📚</span> מאגר מידע</a>
+      <a class="topnav-link" href="contacts.html"><span>👤</span> ספר טלפונים</a>
+      <a class="topnav-link" href="report.html"><span>📝</span> דיווח ובקשות</a>
+    </div>
+  </nav>
+</div>
+
+<main class="main">
+  <div class="content-wrap">
+
+    <!-- GREETING -->
+    <div class="greeting-bar" id="greeting-section">
+      <div class="greeting-text">
+        <h2 id="greeting-msg"></h2>
+        <p id="greeting-sub">מה נעשה היום?</p>
+        <div class="greeting-time" id="greeting-time"></div>
+      </div>
+      <div class="greeting-actions">
+        <a href="report.html" class="btn btn-primary">+ בקשה חדשה</a>
+        <a href="info.html" class="btn btn-ghost">מאגר מידע</a>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#e8effa">🎫</div>
+        <div><div class="stat-num" id="stat-tickets">—</div><div class="stat-label">פניות פתוחות</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#fef3c7">📋</div>
+        <div><div class="stat-num" id="stat-pending">—</div><div class="stat-label">בקשות ממתינות</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#ede9fe">✉️</div>
+        <div><div class="stat-num" id="stat-msgs">—</div><div class="stat-label">הודעות חדשות</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#d1fae5">🌴</div>
+        <div><div class="stat-num" id="stat-vacation">—</div><div class="stat-label">ימים לחופשה</div></div>
+      </div>
+    </div>
+
+    <!-- CONTENT GRID -->
+    <div class="content-grid">
+      <!-- LEFT -->
+      <div>
+        <div class="section-header">
+          <div class="section-title">עדכונים אחרונים</div>
+          <a href="announcements.html" class="section-link">כל העדכונים ←</a>
+        </div>
+        <div class="announcements-list" id="ann-list"></div>
+
+        <div class="section-header" style="margin-top:24px;">
+          <div class="section-title">יחידות</div>
+        </div>
+        <div class="units-grid" id="units-grid"></div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right-col">
+        <div class="widget" id="my-requests-widget">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div class="widget-title" style="margin:0">📋 הבקשות שלי</div>
+            <a href="report.html" class="section-link" style="font-size:12px">+ חדשה</a>
+          </div>
+          <div id="my-requests-list"></div>
+        </div>
+
+        <div class="widget" id="quicklinks-widget">
+          <div class="widget-title">🚀 גישה מהירה</div>
+          <div class="quicklinks-grid" id="qlinks-grid"></div>
+        </div>
+
+        <div class="widget" id="birthdays-widget">
+          <div class="widget-title">🎂 ימי הולדת השבוע</div>
+          <div id="bday-list"></div>
+        </div>
+
+        <div class="widget" id="events-widget">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div class="widget-title" style="margin:0">📅 אירועים קרובים</div>
+            <a href="events.html" class="section-link" style="font-size:12px">הכל ←</a>
+          </div>
+          <div id="events-preview"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../shared/store.js"></script>
+<script src="../shared/data.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+const d = PortalData;
+
+function initGreeting() {
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'בוקר טוב' : h < 17 ? 'צהריים טובים' : 'ערב טוב';
+  document.getElementById('greeting-msg').textContent = `${greet}, ${d.user.firstName} 👋`;
+  const days = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const now = new Date();
+  document.getElementById('greeting-time').textContent = `יום ${days[now.getDay()]}, ${now.toLocaleDateString('he-IL')}`;
+}
+
+document.getElementById('user-av').textContent = d.user.firstName[0];
+document.getElementById('user-nm').textContent = d.user.name;
+document.getElementById('user-rl').textContent = d.user.role;
+
+const _reports = DemoStore.getReports();
+document.getElementById('stat-tickets').textContent = _reports.filter(r => r.status === 'פתוח').length || d.stats.openTickets;
+document.getElementById('stat-pending').textContent = d.stats.pendingRequests;
+document.getElementById('stat-msgs').textContent = d.stats.unreadMessages;
+document.getElementById('stat-vacation').textContent = d.stats.daysUntilVacation;
+document.getElementById('notif-badge').textContent = d.stats.unreadMessages;
+
+const annList = document.getElementById('ann-list');
+d.announcements.slice(0,3).forEach(a => {
+  annList.innerHTML += `<div class="announcement-card">
+    <div class="ann-priority ${a.priority}"></div>
+    <div class="ann-body">
+      <div class="ann-title">${a.title}</div>
+      <div class="ann-excerpt">${a.excerpt}</div>
+      <div class="ann-meta">
+        <span class="ann-date">${a.date}</span>
+        <span class="ann-cat">${a.category}</span>
+        <span class="ann-date">${a.author}</span>
+      </div>
+    </div>
+  </div>`;
+});
+
+const qg = document.getElementById('qlinks-grid');
+d.quickLinks.forEach(l => {
+  qg.innerHTML += `<a class="qlink" href="${l.url}">
+    <span class="qicon">${l.icon}</span>
+    <span class="qname">${l.name}</span>
+  </a>`;
+});
+
+const bdList = document.getElementById('bday-list');
+d.birthdays.forEach(b => {
+  bdList.innerHTML += `<div class="birthday-item">
+    <div class="bday-avatar">${b.name[0]}</div>
+    <div><div class="bday-name">${b.name}</div><div class="bday-date">${b.date}</div></div>
+    <span class="bday-badge">בעוד ${b.daysLeft} ימים</span>
+  </div>`;
+});
+
+const typeColors = { meeting:'#0ea5e9', training:'#10b981', event:'#7c3aed', deadline:'#ef4444', holiday:'#f59e0b' };
+const evPrev = document.getElementById('events-preview');
+d.events.slice(0,3).forEach(e => {
+  const dt = new Date(e.date);
+  const months = ['ינו','פבר','מרץ','אפר','מאי','יונ','יול','אוג','ספט','אוק','נוב','דצמ'];
+  evPrev.innerHTML += `<div class="event-item">
+    <div class="event-date-badge">
+      <div class="event-day">${dt.getDate()}</div>
+      <div class="event-month">${months[dt.getMonth()]}</div>
+    </div>
+    <div>
+      <div class="event-title">${e.title}</div>
+      <div class="event-time">${e.time ? e.time + (e.location ? ' | ' + e.location : '') : e.location || ''}</div>
+    </div>
+    <div class="event-type-dot" style="background:${typeColors[e.type]||'#64748b'}"></div>
+  </div>`;
+});
+
+const ug = document.getElementById('units-grid');
+d.units.forEach(u => {
+  ug.innerHTML += `<a class="unit-card" href="#" style="border-top:3px solid ${u.color}">
+    <div class="unit-icon">${u.icon}</div>
+    <div class="unit-name">${u.name}</div>
+    <div class="unit-members">${u.members} עובדים</div>
+  </a>`;
+});
+
+document.getElementById('sb-ann') && (document.getElementById('sb-ann').textContent = d.announcements.length);
+initGreeting();
+
+function renderMyRequests() {
+  const reports = DemoStore.getReports();
+  const el = document.getElementById('my-requests-list');
+  if (!el) return;
+  if (!reports.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3);text-align:center;padding:10px 0">אין בקשות שמורות עדיין</div>';
+    return;
+  }
+  el.innerHTML = reports.slice(0,3).map(r => `
+    <div class="req-item">
+      <span style="font-size:16px">${r.typeIcon}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:var(--text1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</div>
+        <div style="font-size:11px;color:var(--text3)">${r.at}</div>
+      </div>
+      <div style="font-size:10px;font-weight:700;color:var(--accent)">${r.id}</div>
+    </div>`).join('') +
+    (reports.length > 3 ? `<div style="font-size:11px;color:var(--text3);text-align:center;padding-top:6px">ועוד ${reports.length-3} נוספות</div>` : '');
+}
+
+renderMyRequests();
+
+function refreshDynamic() {
+  renderMyRequests();
+  const r = DemoStore.getReports();
+  document.getElementById('stat-tickets').textContent = r.filter(x => x.status === 'פתוח').length || d.stats.openTickets;
+}
+window.addEventListener('pageshow', refreshDynamic);
+window.addEventListener('focus', refreshDynamic);
+
+const walkme = new WalkMe([
+  { target: '#theme-toggle-mount', title: 'בחרו את המראה שלכם 🎨', text: 'עברו בין מצב כהה לבהיר לפי הטעם שלכם.' },
+  { target: '#greeting-section', title: 'ברוכים הבאים!', text: 'כאן תמצאו את הפורטל הממשלתי. בואו נסייר.' },
+  { target: '#search-bar', title: 'חיפוש מהיר', text: 'חפשו מסמכים, אנשי קשר ונהלים ממקום אחד.' },
+  { target: '#stats-row', title: 'לוח מצב אישי', text: 'פניות פתוחות, בקשות ממתינות, הודעות וימי חופשה.' },
+  { target: '#quicklinks-widget', title: 'גישה מהירה', text: 'קיצורי דרך למרכב"ה, TopDesk ועוד.' },
+  { target: '#birthdays-widget', title: 'ימי הולדת', text: 'עקבו אחרי ימי הולדת של עמיתים השבוע.' },
+  { target: '.topnav', title: 'ניווט בפורטל', text: 'הניווט הופיע בשורה עליונה — לחצו על כל לשונית לניווט.' }
+], { accent:'#0e4d9b', bg:'#fff', border:'#dde1e7', textPrimary:'#1a2b4a', textSecondary:'#5a6474' });
+
+document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
+</script>
+<script src="../shared/theme.js"></script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+</body>
+</html>

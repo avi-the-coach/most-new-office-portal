@@ -1,0 +1,270 @@
+/* ============================================================
+   OPTION 2 — GOV.IL Style
+   Government of Israel design language
+   White/clean/formal, government blue #0e4d9b
+   Activated via class="gov-il" on <html>
+   ============================================================ */
+
+/* === CSS VARIABLE OVERRIDE via html.gov-il (higher specificity than :root) === */
+html.gov-il {
+  --bg:      #f4f6f9;
+  --bg2:     #ffffff;
+  --bg3:     #eaeff5;
+  --bg4:     #dde5ef;
+  --border:  #c8d3e0;
+  --accent:  #0e4d9b;
+  --accent2: #1a5c35;
+  --text1:   #1a1a2e;
+  --text2:   #4a5568;
+  --text3:   #718096;
+  --success: #276749;
+  --warning: #c05621;
+  --danger:  #9b2c2c;
+  --sidebar: 230px;
+  --topbar:  60px;
+  --radius:  4px;
+
+  /* WalkMe */
+  --wm-accent: #0e4d9b;
+  --wm-bg: #ffffff;
+  --wm-border: #c8d3e0;
+  --wm-text-primary: #1a1a2e;
+  --wm-text-secondary: #4a5568;
+}
+
+/* === TOPBAR — Government blue === */
+html.gov-il .topbar {
+  background: #0e4d9b !important;
+  border-bottom: none !important;
+  box-shadow: 0 2px 8px rgba(14,77,155,0.25);
+}
+html.gov-il .logo-text  { color: #ffffff !important; }
+html.gov-il .logo-sub   { color: rgba(255,255,255,0.72) !important; }
+html.gov-il .user-name  { color: #ffffff !important; }
+html.gov-il .user-role  { color: rgba(255,255,255,0.65) !important; }
+html.gov-il .user-avatar {
+  background: rgba(255,255,255,0.2) !important;
+  border: 2px solid rgba(255,255,255,0.35) !important;
+}
+html.gov-il .logo-icon {
+  background: rgba(255,255,255,0.18) !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+}
+html.gov-il .topbar-search input {
+  background: rgba(255,255,255,0.14) !important;
+  border-color: rgba(255,255,255,0.28) !important;
+  color: #fff !important;
+}
+html.gov-il .topbar-search input::placeholder { color: rgba(255,255,255,0.55) !important; }
+html.gov-il .topbar-search .search-icon       { color: rgba(255,255,255,0.65) !important; }
+html.gov-il .topbar-icon-btn {
+  background: rgba(255,255,255,0.14) !important;
+  border-color: rgba(255,255,255,0.25) !important;
+  color: rgba(255,255,255,0.88) !important;
+}
+html.gov-il .topbar-icon-btn:hover { background: rgba(255,255,255,0.24) !important; }
+html.gov-il .topbar-user:hover     { background: rgba(255,255,255,0.1) !important; }
+
+/* Shared buttons on blue topbar */
+html.gov-il .discover-btn {
+  background: rgba(255,255,255,0.12) !important;
+  border-color: rgba(255,255,255,0.28) !important;
+  color: rgba(255,255,255,0.85) !important;
+}
+html.gov-il .discover-btn:hover   { border-color: #f59e0b !important; color: #f59e0b !important; }
+html.gov-il .discover-btn.on      { background: rgba(245,158,11,0.18) !important; border-color: #f59e0b !important; color: #f59e0b !important; }
+html.gov-il .theme-toggle-btn     { background: rgba(255,255,255,0.14) !important; border-color: rgba(255,255,255,0.28) !important; color: rgba(255,255,255,0.85) !important; }
+html.gov-il .theme-toggle-btn:hover { background: rgba(255,255,255,0.24) !important; }
+html.gov-il .theme-switch-track   { background: rgba(255,255,255,0.3) !important; }
+html.gov-il .walkme-trigger-btn   { border-color: rgba(255,255,255,0.45) !important; color: rgba(255,255,255,0.85) !important; }
+html.gov-il .walkme-trigger-btn:hover { background: rgba(255,255,255,0.14) !important; color: #fff !important; }
+html.gov-il .option-switcher      { background: rgba(255,255,255,0.1) !important; border-color: rgba(255,255,255,0.2) !important; }
+html.gov-il .option-switch-btn    { color: rgba(255,255,255,0.75) !important; }
+html.gov-il .option-switch-btn:hover:not(.current):not(.soon) { background: rgba(255,255,255,0.15) !important; color: #fff !important; }
+html.gov-il .option-switch-btn.current { background: rgba(255,255,255,0.25) !important; color: #fff !important; }
+
+/* === SIDEBAR — white with blue left border === */
+html.gov-il .sidebar {
+  background: #ffffff !important;
+  border-left: 3px solid #0e4d9b !important;
+}
+html.gov-il .sidebar-label  { color: #0e4d9b !important; letter-spacing: 0.8px; }
+html.gov-il .sidebar-divider { background: #d0dae8 !important; }
+html.gov-il .sidebar-link {
+  color: #4a5568 !important;
+  border-radius: 0 !important;
+  border-right: 3px solid transparent;
+}
+html.gov-il .sidebar-link:hover {
+  background: #eef2fa !important;
+  color: #0e4d9b !important;
+}
+html.gov-il .sidebar-link.active {
+  background: #eef2fa !important;
+  color: #0e4d9b !important;
+  border-right: 3px solid #0e4d9b;
+  font-weight: 700;
+}
+html.gov-il .sidebar-link .count {
+  background: #eef2fa !important;
+  color: #0e4d9b !important;
+}
+
+/* === MAIN === */
+html.gov-il .main { background: #f4f6f9 !important; }
+
+/* === CARDS — white with formal border, less rounded === */
+html.gov-il .stat-card,
+html.gov-il .widget,
+html.gov-il .announcement-card,
+html.gov-il .ann-card,
+html.gov-il .calendar-card,
+html.gov-il .contact-card,
+html.gov-il .contact-row,
+html.gov-il .doc-item,
+html.gov-il .cat-card,
+html.gov-il .unit-card,
+html.gov-il .qlink,
+html.gov-il .type-card,
+html.gov-il .form-card,
+html.gov-il .confirm-summary,
+html.gov-il .filter-bar,
+html.gov-il .summary-pill,
+html.gov-il .event-detail {
+  background: #ffffff !important;
+  border-color: #c8d3e0 !important;
+  border-radius: 4px !important;
+}
+html.gov-il .stat-card:hover       { border-color: #0e4d9b !important; }
+html.gov-il .contact-card:hover    { border-color: #0e4d9b !important; transform: translateY(-1px) !important; }
+html.gov-il .contact-row:hover     { border-color: #0e4d9b !important; }
+html.gov-il .doc-item:hover        { border-color: #0e4d9b !important; background: #f4f6f9 !important; }
+html.gov-il .ann-card:hover        { border-color: #0e4d9b !important; }
+html.gov-il .unit-card:hover       { transform: translateY(-1px) !important; }
+html.gov-il .announcement-card:hover { border-color: #0e4d9b !important; }
+
+/* Greeting bar — gov blue left stripe */
+html.gov-il .greeting-bar {
+  background: linear-gradient(135deg, #eef2fa 0%, #f4f7ff 100%) !important;
+  border-color: #c8d3e0 !important;
+  border-right: 4px solid #0e4d9b !important;
+  border-radius: 4px !important;
+}
+html.gov-il .greeting-text h2 { color: #0e4d9b !important; }
+
+/* Page hero */
+html.gov-il .page-hero {
+  background: linear-gradient(135deg, #eef2fa 0%, #f0f5ff 100%) !important;
+  border-right: 4px solid #0e4d9b !important;
+  border-radius: 4px !important;
+}
+html.gov-il .page-hero h1 { color: #0e4d9b !important; }
+
+/* === STATS === */
+html.gov-il .stat-num   { color: #0e4d9b !important; }
+html.gov-il .stat-icon  { border-radius: 4px !important; }
+
+/* === BUTTONS === */
+html.gov-il .btn         { border-radius: 4px !important; }
+html.gov-il .btn-primary { background: #0e4d9b !important; }
+html.gov-il .btn-primary:hover { background: #0c4287 !important; opacity: 1 !important; }
+html.gov-il .btn-ghost   { border-color: #c8d3e0 !important; color: #4a5568 !important; }
+html.gov-il .btn-ghost:hover { border-color: #0e4d9b !important; color: #0e4d9b !important; background: transparent !important; }
+html.gov-il .btn-success { background: #276749 !important; border-radius: 4px !important; }
+
+/* === INPUTS === */
+html.gov-il input,
+html.gov-il textarea,
+html.gov-il select {
+  background: #f4f6f9 !important;
+  border-color: #c8d3e0 !important;
+  color: #1a1a2e !important;
+  border-radius: 4px !important;
+}
+html.gov-il input:focus,
+html.gov-il textarea:focus,
+html.gov-il select:focus { border-color: #0e4d9b !important; }
+
+/* === FILTER CHIPS === */
+html.gov-il .filter-chip {
+  border-color: #c8d3e0 !important; color: #4a5568 !important; border-radius: 4px !important;
+}
+html.gov-il .filter-chip:hover  { border-color: #0e4d9b !important; color: #0e4d9b !important; }
+html.gov-il .filter-chip.active { background: #0e4d9b !important; border-color: #0e4d9b !important; color: #fff !important; }
+
+/* === SECTION HEADERS === */
+html.gov-il .section-title .dot { background: #0e4d9b !important; }
+html.gov-il .section-link       { color: #0e4d9b !important; }
+html.gov-il .widget-title       { color: #0e4d9b !important; }
+
+/* === ANNOUNCEMENTS priority bars === */
+html.gov-il .ann-priority.high,
+html.gov-il .ann-side.high   { background: #9b2c2c !important; }
+html.gov-il .ann-priority.medium,
+html.gov-il .ann-side.medium { background: #c05621 !important; }
+html.gov-il .ann-priority.low,
+html.gov-il .ann-side.low    { background: #276749 !important; }
+html.gov-il .ann-cat          { color: #0e4d9b !important; background: rgba(14,77,155,0.08) !important; }
+html.gov-il .ann-new          { color: #0e4d9b !important; background: rgba(14,77,155,0.1) !important; }
+
+/* === EVENTS === */
+html.gov-il .event-date-badge { background: #eef2fa !important; border-color: #c8d3e0 !important; border-radius: 4px !important; }
+html.gov-il .event-day        { color: #0e4d9b !important; }
+
+/* === CALENDAR === */
+html.gov-il .cal-cell         { background: #f4f6f9 !important; border-radius: 3px !important; }
+html.gov-il .cal-cell:hover   { background: #eaeff5 !important; }
+html.gov-il .cal-cell.today   { border-color: #0e4d9b !important; background: rgba(14,77,155,0.06) !important; }
+html.gov-il .cal-cell.today .cal-day-num { color: #0e4d9b !important; }
+html.gov-il .cal-nav-btn      { background: #f4f6f9 !important; border-color: #c8d3e0 !important; color: #4a5568 !important; border-radius: 4px !important; }
+html.gov-il .cal-nav-btn:hover { border-color: #0e4d9b !important; color: #0e4d9b !important; }
+
+/* === CONTACTS === */
+html.gov-il .contact-avatar-lg,
+html.gov-il .contact-avatar-sm { background: linear-gradient(135deg, #0e4d9b, #1565c0) !important; }
+html.gov-il .contact-unit      { color: #0e4d9b !important; background: rgba(14,77,155,0.08) !important; }
+html.gov-il .contact-unit-pill { color: #0e4d9b !important; background: rgba(14,77,155,0.08) !important; }
+html.gov-il .contact-btn:hover { border-color: #0e4d9b !important; color: #0e4d9b !important; }
+html.gov-il .view-btn          { background: #f4f6f9 !important; border-color: #c8d3e0 !important; color: #4a5568 !important; border-radius: 4px !important; }
+html.gov-il .view-btn.active   { background: #0e4d9b !important; border-color: #0e4d9b !important; color: #fff !important; }
+
+/* === KNOWLEDGE BASE === */
+html.gov-il .doc-cat    { color: #0e4d9b !important; background: rgba(14,77,155,0.08) !important; }
+html.gov-il .doc-arrow  { color: #0e4d9b !important; }
+
+/* === BIRTHDAYS === */
+html.gov-il .bday-avatar { background: linear-gradient(135deg, #0e4d9b, #1565c0) !important; }
+html.gov-il .bday-badge  { color: #c05621 !important; background: rgba(192,86,33,0.1) !important; }
+
+/* === UNITS === */
+html.gov-il .unit-name { color: #1a1a2e !important; }
+
+/* === QUICK LINKS === */
+html.gov-il .qlink:hover { border-color: #0e4d9b !important; }
+
+/* === REPORT FORM === */
+html.gov-il .progress-bar  { background: #ffffff !important; border-color: #c8d3e0 !important; border-radius: 4px !important; }
+html.gov-il .prog-dot.active { border-color: #0e4d9b !important; background: #0e4d9b !important; }
+html.gov-il .prog-dot.done   { border-color: #276749 !important; background: #276749 !important; }
+html.gov-il .prog-line.done  { background: #276749 !important; }
+html.gov-il .prog-label.active { color: #0e4d9b !important; }
+html.gov-il .prog-label.done   { color: #276749 !important; }
+html.gov-il .type-card.selected { border-color: #0e4d9b !important; background: rgba(14,77,155,0.06) !important; }
+html.gov-il .type-card:hover    { border-color: #0e4d9b !important; }
+html.gov-il .priority-pill[data-p="high"].sel   { border-color: #9b2c2c !important; color: #9b2c2c !important; background: rgba(155,44,44,0.06) !important; }
+html.gov-il .priority-pill[data-p="medium"].sel { border-color: #c05621 !important; color: #c05621 !important; background: rgba(192,86,33,0.06) !important; }
+html.gov-il .priority-pill[data-p="low"].sel    { border-color: #276749 !important; color: #276749 !important; background: rgba(39,103,73,0.06) !important; }
+html.gov-il .success-title { color: #276749 !important; }
+
+/* === SIDEBAR LINKS badge === */
+html.gov-il .sidebar-link.active .count { background: rgba(14,77,155,0.12) !important; color: #0e4d9b !important; }
+
+/* ============================================================
+   THEME TOGGLE — still functional but styled for blue topbar
+   ============================================================ */
+html.gov-il.light-mode {
+  /* GOV.IL is always light — but if someone toggles, keep it GOV.IL */
+  --bg: #f4f6f9; --bg2: #ffffff; --bg3: #eaeff5;
+  --border: #c8d3e0; --accent: #0e4d9b;
+  --text1: #1a1a2e; --text2: #4a5568;
+}

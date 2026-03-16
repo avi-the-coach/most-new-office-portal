@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<link rel="stylesheet" href="../shared/theme.css">
+<script>(function(){var t;try{t=new URLSearchParams(window.location.search).get("t")}catch(e){}if(!t){try{t=localStorage.getItem("portal-theme")}catch(e){}}if(!t){try{t=sessionStorage.getItem("portal-theme")}catch(e){}}if(t==="light")document.documentElement.classList.add("light-mode");else document.documentElement.classList.remove("light-mode");})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ספר טלפונים — פורטל עובדים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#070c18; --bg2:#0d1629; --bg3:#111d35; --bg4:#162040;
+  --border:#1e3358; --accent:#00c2e0; --accent2:#7c3aed;
+  --text1:#e2eaf8; --text2:#8fa3c8; --text3:#4a6080;
+  --success:#10b981; --warning:#f59e0b; --danger:#ef4444;
+  --sidebar:230px; --topbar:60px; --radius:12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Heebo',sans-serif; background:var(--bg); color:var(--text1); direction:rtl; }
+.layout { display:grid; grid-template-columns:var(--sidebar) 1fr; grid-template-rows:var(--topbar) 1fr; min-height:100vh; }
+.topbar { grid-column:1/-1; background:var(--bg2); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:16px; padding:0 24px; position:sticky; top:0; z-index:100; }
+.topbar-logo { display:flex; align-items:center; gap:10px; width:var(--sidebar); flex-shrink:0; }
+.logo-icon { width:32px; height:32px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:8px; display:grid; place-items:center; font-size:16px; }
+.logo-text { font-size:13px; font-weight:700; }
+.logo-sub { font-size:10px; color:var(--text2); }
+.topbar-search { flex:1; max-width:380px; position:relative; }
+.topbar-search input { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:8px 14px 8px 38px; color:var(--text1); font-size:13.5px; font-family:inherit; direction:rtl; }
+.topbar-search input:focus { outline:none; border-color:var(--accent); }
+.topbar-search input::placeholder { color:var(--text3); }
+.topbar-search .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text3); pointer-events:none; }
+.topbar-actions { margin-right:auto; display:flex; align-items:center; gap:10px; }
+.topbar-icon-btn { width:36px; height:36px; border-radius:8px; background:var(--bg3); border:1px solid var(--border); color:var(--text2); cursor:pointer; display:grid; place-items:center; position:relative; }
+.badge { position:absolute; top:-4px; right:-4px; width:16px; height:16px; background:var(--danger); border-radius:50%; font-size:9px; font-weight:700; display:grid; place-items:center; color:#fff; }
+.topbar-user { display:flex; align-items:center; gap:8px; padding:4px 8px; border-radius:8px; cursor:pointer; }
+.user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:grid; place-items:center; font-size:13px; font-weight:700; color:#fff; }
+.sidebar { background:var(--bg2); border-left:1px solid var(--border); padding:16px 0; position:sticky; top:var(--topbar); height:calc(100vh - var(--topbar)); overflow-y:auto; }
+.sidebar-section { padding:0 12px; margin-bottom:6px; }
+.sidebar-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; padding:8px 6px 4px; }
+.sidebar-link { display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px; text-decoration:none; color:var(--text2); font-size:13.5px; font-weight:500; transition:all 0.15s; }
+.sidebar-link:hover { background:var(--bg3); color:var(--text1); }
+.sidebar-link.active { background:rgba(0,194,224,0.12); color:var(--accent); }
+.sidebar-link .icon { font-size:15px; width:20px; text-align:center; }
+.sidebar-divider { height:1px; background:var(--border); margin:8px 12px; }
+.main { padding:24px; overflow-y:auto; }
+
+/* PAGE HEADER */
+.page-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:20px; flex-wrap:wrap; gap:12px;
+}
+.page-title h1 { font-size:22px; font-weight:800; }
+.page-title p { font-size:13px; color:var(--text2); margin-top:3px; }
+
+/* FILTER BAR */
+.filter-bar {
+  background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px 16px; margin-bottom:20px;
+  display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+}
+.filter-bar input {
+  flex:1; min-width:200px; background:var(--bg3); border:1px solid var(--border);
+  border-radius:8px; padding:9px 14px; color:var(--text1); font-size:13.5px;
+  font-family:inherit; direction:rtl;
+}
+.filter-bar input:focus { outline:none; border-color:var(--accent); }
+.filter-bar input::placeholder { color:var(--text3); }
+.unit-filters { display:flex; gap:6px; flex-wrap:wrap; }
+.filter-chip {
+  padding:5px 12px; border-radius:20px; font-size:12px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border); color:var(--text2);
+  background:transparent; transition:all 0.15s; font-family:inherit;
+}
+.filter-chip:hover { border-color:var(--accent); color:var(--accent); }
+.filter-chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+.view-toggle { display:flex; gap:4px; }
+.view-btn { width:34px; height:34px; border-radius:7px; background:var(--bg3); border:1px solid var(--border); color:var(--text2); cursor:pointer; display:grid; place-items:center; font-size:14px; transition:all 0.2s; }
+.view-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+/* GRID VIEW */
+.contacts-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:14px; }
+.contact-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:20px 16px; text-align:center;
+  transition:all 0.2s; cursor:pointer;
+}
+.contact-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+.contact-avatar-lg {
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  display:grid; place-items:center; font-size:22px; font-weight:700;
+  color:#fff; margin:0 auto 12px;
+}
+.contact-name { font-size:15px; font-weight:700; color:var(--text1); margin-bottom:3px; }
+.contact-role { font-size:12px; color:var(--text2); margin-bottom:6px; }
+.contact-unit { font-size:11px; color:var(--accent); background:rgba(0,194,224,0.08); padding:3px 10px; border-radius:10px; display:inline-block; margin-bottom:12px; }
+.contact-actions { display:flex; gap:8px; justify-content:center; }
+.contact-btn { padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--text2); transition:all 0.2s; font-family:inherit; }
+.contact-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+/* LIST VIEW */
+.contacts-list { display:none; flex-direction:column; gap:6px; }
+.contact-row {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:10px; padding:12px 16px;
+  display:flex; align-items:center; gap:14px;
+  cursor:pointer; transition:all 0.2s;
+}
+.contact-row:hover { border-color:var(--accent); }
+.contact-avatar-sm {
+  width:40px; height:40px; border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  display:grid; place-items:center; font-size:15px; font-weight:700;
+  color:#fff; flex-shrink:0;
+}
+.contact-info { flex:1; }
+.contact-info .name { font-size:14px; font-weight:600; color:var(--text1); }
+.contact-info .role { font-size:12px; color:var(--text2); }
+.contact-detail { font-size:12px; color:var(--text2); min-width:120px; }
+.contact-unit-pill { font-size:11px; color:var(--accent); background:rgba(0,194,224,0.08); padding:3px 10px; border-radius:10px; white-space:nowrap; }
+.contact-ext { font-size:13px; color:var(--text3); min-width:60px; text-align:center; }
+
+/* Stats bar */
+.results-bar { font-size:13px; color:var(--text2); margin-bottom:12px; }
+
+@media(max-width:768px) { .layout { grid-template-columns:1fr; } .sidebar { display:none; } .contacts-grid { grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <header class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">🏛️</div>
+      <div><div class="logo-text">פורטל עובדים</div><div class="logo-sub">משרד החדשנות, המדע והטכנולוגיה</div></div>
+    </div>
+    <div class="topbar-search"><span class="search-icon">🔍</span><input type="text" placeholder="חיפוש..."></div>
+        <div id="option-switcher-mount"></div>
+      <div class="topbar-actions">
+      <div id="discover-mount"></div>
+      <div id="theme-toggle-mount"></div>
+      <div id="walkme-trigger-mount"></div>
+      <div class="topbar-icon-btn">🔔<span class="badge">7</span></div>
+      <div class="topbar-user">
+        <div class="user-avatar" id="user-av"></div>
+        <div><div style="font-size:13px;font-weight:600" id="user-nm"></div></div>
+      </div>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">ניווט ראשי</div>
+      <a class="sidebar-link" href="index.html"><span class="icon">🏠</span> דף הבית</a>
+      <a class="sidebar-link" href="announcements.html"><span class="icon">📣</span> עדכונים</a>
+      <a class="sidebar-link" href="events.html"><span class="icon">📅</span> אירועים</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">שירותים</div>
+      <a class="sidebar-link" href="info.html"><span class="icon">📚</span> מאגר מידע</a>
+      <a class="sidebar-link active" href="contacts.html"><span class="icon">👤</span> ספר טלפונים</a>
+      <a class="sidebar-link" href="report.html"><span class="icon">📝</span> דיווח ובקשות</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">מערכות</div>
+      <a class="sidebar-link" href="#"><span class="icon">⏱️</span> מרכב"ה</a>
+      <a class="sidebar-link" href="#"><span class="icon">🎫</span> TopDesk</a>
+      <a class="sidebar-link" href="#"><span class="icon">✅</span> Action Base</a>
+    </div>
+  </nav>
+  <main class="main">
+    <div class="page-header">
+      <div class="page-title">
+        <h1>👤 ספר טלפונים</h1>
+        <p>אנשי קשר ויחידות ארגוניות</p>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <input type="text" id="contact-search" placeholder="🔍  חיפוש לפי שם, תפקיד, יחידה...">
+      <div class="unit-filters" id="unit-filters">
+        <button class="filter-chip active" data-unit="all" onclick="filterContacts('all',this)">הכל</button>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="btn-grid" onclick="setView('grid')" title="תצוגת כרטיסים">⊞</button>
+        <button class="view-btn" id="btn-list" onclick="setView('list')" title="תצוגת רשימה">☰</button>
+      </div>
+    </div>
+
+    <div class="results-bar" id="results-bar"></div>
+    <div class="contacts-grid" id="contacts-grid"></div>
+    <div class="contacts-list" id="contacts-list"></div>
+  </main>
+</div>
+<script src="../shared/theme.js"></script>
+<script src="../shared/data.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+const d = PortalData;
+document.getElementById('user-av').textContent = d.user.firstName[0];
+document.getElementById('user-nm').textContent = d.user.name;
+
+// Build unit filters
+const units = [...new Set(d.contacts.map(c => c.unit))];
+const uf = document.getElementById('unit-filters');
+units.forEach(u => {
+  uf.innerHTML += `<button class="filter-chip" data-unit="${u}" onclick="filterContacts('${u}',this)">${u}</button>`;
+});
+
+let currentUnit = 'all';
+let currentView = 'grid';
+let searchQ = '';
+
+function renderContacts() {
+  let items = d.contacts;
+  if (currentUnit !== 'all') items = items.filter(c => c.unit === currentUnit);
+  if (searchQ) items = items.filter(c =>
+    c.name.includes(searchQ) || c.role.includes(searchQ) || c.unit.includes(searchQ)
+  );
+
+  document.getElementById('results-bar').textContent = `מציג ${items.length} מתוך ${d.contacts.length} אנשי קשר`;
+
+  const grid = document.getElementById('contacts-grid');
+  const list = document.getElementById('contacts-list');
+
+  grid.innerHTML = items.map(c => `
+    <div class="contact-card">
+      <div class="contact-avatar-lg">${c.avatar}</div>
+      <div class="contact-name">${c.name}</div>
+      <div class="contact-role">${c.role}</div>
+      <div class="contact-unit">${c.unit}</div>
+      <div class="contact-actions">
+        <button class="contact-btn">📞 ${c.ext}</button>
+        <button class="contact-btn">✉️ מייל</button>
+      </div>
+    </div>`).join('');
+
+  list.innerHTML = items.map(c => `
+    <div class="contact-row">
+      <div class="contact-avatar-sm">${c.avatar}</div>
+      <div class="contact-info">
+        <div class="name">${c.name}</div>
+        <div class="role">${c.role}</div>
+      </div>
+      <div class="contact-unit-pill">${c.unit}</div>
+      <div class="contact-detail">📞 ${c.phone}</div>
+      <div class="contact-detail">✉️ ${c.email}</div>
+      <div class="contact-ext">שלוחה ${c.ext}</div>
+    </div>`).join('');
+}
+
+function filterContacts(unit, btn) {
+  currentUnit = unit;
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderContacts();
+}
+
+function setView(view) {
+  currentView = view;
+  document.getElementById('contacts-grid').style.display = view === 'grid' ? 'grid' : 'none';
+  document.getElementById('contacts-list').style.display = view === 'list' ? 'flex' : 'none';
+  document.getElementById('btn-grid').classList.toggle('active', view === 'grid');
+  document.getElementById('btn-list').classList.toggle('active', view === 'list');
+}
+
+// WalkMe
+const walkme = new WalkMe([
+  { target: '#contact-search', title: 'חיפוש איש קשר',   text: 'חפשו לפי שם, תפקיד או יחידה — התוצאות מתעדכנות בזמן אמת.' },
+  { target: '.unit-filters',   title: 'סינון לפי יחידה', text: 'לחצו על שם יחידה לסינון אנשי הקשר שלה.' },
+  { target: '.view-toggle',    title: 'תצוגה',             text: 'עברו בין תצוגת כרטיסים לתצוגת רשימה — לפי העדפתכם.' },
+  { target: '.contacts-grid',  title: 'כרטיס איש קשר',   text: 'כל כרטיס מציג שם, תפקיד ויחידה. לחצו על שלוחה או מייל ליצירת קשר.' }
+], { accent:'#00c2e0', bg:'#0d1629', border:'#1e3358', textPrimary:'#e2eaf8', textSecondary:'#8fa3c8' });
+document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
+
+document.getElementById('contact-search').addEventListener('input', function() {
+  searchQ = this.value.trim();
+  renderContacts();
+});
+
+renderContacts();
+</script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+</body>
+</html>

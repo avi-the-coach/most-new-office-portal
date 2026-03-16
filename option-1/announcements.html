@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<link rel="stylesheet" href="../shared/theme.css">
+<script>(function(){var t;try{t=new URLSearchParams(window.location.search).get("t")}catch(e){}if(!t){try{t=localStorage.getItem("portal-theme")}catch(e){}}if(!t){try{t=sessionStorage.getItem("portal-theme")}catch(e){}}if(t==="light")document.documentElement.classList.add("light-mode");else document.documentElement.classList.remove("light-mode");})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>עדכונים — פורטל עובדים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#070c18; --bg2:#0d1629; --bg3:#111d35; --bg4:#162040;
+  --border:#1e3358; --accent:#00c2e0; --accent2:#7c3aed;
+  --text1:#e2eaf8; --text2:#8fa3c8; --text3:#4a6080;
+  --success:#10b981; --warning:#f59e0b; --danger:#ef4444;
+  --sidebar:230px; --topbar:60px; --radius:12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Heebo',sans-serif; background:var(--bg); color:var(--text1); direction:rtl; }
+.layout { display:grid; grid-template-columns:var(--sidebar) 1fr; grid-template-rows:var(--topbar) 1fr; min-height:100vh; }
+.topbar { grid-column:1/-1; background:var(--bg2); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:16px; padding:0 24px; position:sticky; top:0; z-index:100; }
+.topbar-logo { display:flex; align-items:center; gap:10px; width:var(--sidebar); flex-shrink:0; }
+.logo-icon { width:32px; height:32px; background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:8px; display:grid; place-items:center; font-size:16px; }
+.logo-text { font-size:13px; font-weight:700; }
+.logo-sub { font-size:10px; color:var(--text2); }
+.topbar-search { flex:1; max-width:380px; position:relative; }
+.topbar-search input { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:8px 14px 8px 38px; color:var(--text1); font-size:13.5px; font-family:inherit; direction:rtl; }
+.topbar-search input:focus { outline:none; border-color:var(--accent); }
+.topbar-search input::placeholder { color:var(--text3); }
+.topbar-search .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text3); pointer-events:none; }
+.topbar-actions { margin-right:auto; display:flex; align-items:center; gap:10px; }
+.topbar-icon-btn { width:36px; height:36px; border-radius:8px; background:var(--bg3); border:1px solid var(--border); color:var(--text2); cursor:pointer; display:grid; place-items:center; position:relative; }
+.badge { position:absolute; top:-4px; right:-4px; width:16px; height:16px; background:var(--danger); border-radius:50%; font-size:9px; font-weight:700; display:grid; place-items:center; color:#fff; }
+.topbar-user { display:flex; align-items:center; gap:8px; padding:4px 8px; border-radius:8px; cursor:pointer; }
+.user-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:grid; place-items:center; font-size:13px; font-weight:700; color:#fff; }
+.sidebar { background:var(--bg2); border-left:1px solid var(--border); padding:16px 0; position:sticky; top:var(--topbar); height:calc(100vh - var(--topbar)); overflow-y:auto; }
+.sidebar-section { padding:0 12px; margin-bottom:6px; }
+.sidebar-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; padding:8px 6px 4px; }
+.sidebar-link { display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px; text-decoration:none; color:var(--text2); font-size:13.5px; font-weight:500; transition:all 0.15s; }
+.sidebar-link:hover { background:var(--bg3); color:var(--text1); }
+.sidebar-link.active { background:rgba(0,194,224,0.12); color:var(--accent); }
+.sidebar-link .icon { font-size:15px; width:20px; text-align:center; }
+.sidebar-divider { height:1px; background:var(--border); margin:8px 12px; }
+.main { padding:24px; overflow-y:auto; }
+
+.page-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:20px; }
+.page-title h1 { font-size:22px; font-weight:800; }
+.page-title p { font-size:13px; color:var(--text2); margin-top:3px; }
+
+.filter-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; align-items:center; }
+.filter-chip { padding:5px 14px; border-radius:20px; font-size:12.5px; font-weight:600; cursor:pointer; border:1px solid var(--border); color:var(--text2); background:transparent; transition:all 0.15s; font-family:inherit; }
+.filter-chip:hover { border-color:var(--accent); color:var(--accent); }
+.filter-chip.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+.announcements-col { display:flex; flex-direction:column; gap:10px; max-width:800px; }
+
+.ann-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--radius); padding:0; overflow:hidden;
+  cursor:pointer; transition:border-color 0.2s;
+}
+.ann-card:hover { border-color:var(--accent); }
+.ann-card-top { display:flex; gap:0; }
+.ann-side { width:4px; flex-shrink:0; }
+.ann-side.high { background:var(--danger); }
+.ann-side.medium { background:var(--warning); }
+.ann-side.low { background:var(--success); }
+.ann-content { flex:1; padding:16px 18px; }
+.ann-header { display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; }
+.ann-title { font-size:15px; font-weight:700; color:var(--text1); flex:1; }
+.ann-new { font-size:10px; background:rgba(0,194,224,0.15); color:var(--accent); padding:2px 8px; border-radius:10px; font-weight:700; flex-shrink:0; }
+.ann-text { font-size:13.5px; color:var(--text2); line-height:1.6; }
+.ann-footer { display:flex; align-items:center; gap:12px; margin-top:12px; }
+.ann-cat-badge { font-size:11px; font-weight:700; padding:3px 10px; border-radius:10px; }
+.ann-meta-text { font-size:11.5px; color:var(--text3); }
+.ann-author { font-size:11.5px; color:var(--text2); margin-right:auto; }
+
+/* Priority summary */
+.summary-row { display:flex; gap:12px; margin-bottom:20px; }
+.summary-pill { display:flex; align-items:center; gap:6px; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:8px 14px; font-size:13px; }
+.summary-dot { width:8px; height:8px; border-radius:50%; }
+.summary-count { font-weight:700; }
+
+@media(max-width:768px) { .layout{grid-template-columns:1fr} .sidebar{display:none} }
+</style>
+</head>
+<body>
+<div class="layout">
+  <header class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">🏛️</div>
+      <div><div class="logo-text">פורטל עובדים</div><div class="logo-sub">משרד החדשנות, המדע והטכנולוגיה</div></div>
+    </div>
+    <div class="topbar-search"><span class="search-icon">🔍</span><input type="text" placeholder="חיפוש..."></div>
+        <div id="option-switcher-mount"></div>
+      <div class="topbar-actions">
+      <div id="discover-mount"></div>
+      <div id="theme-toggle-mount"></div>
+      <div id="walkme-trigger-mount"></div>
+      <div class="topbar-icon-btn">🔔<span class="badge">7</span></div>
+      <div class="topbar-user">
+        <div class="user-avatar" id="user-av"></div>
+        <div><div style="font-size:13px;font-weight:600" id="user-nm"></div></div>
+      </div>
+    </div>
+  </header>
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">ניווט ראשי</div>
+      <a class="sidebar-link" href="index.html"><span class="icon">🏠</span> דף הבית</a>
+      <a class="sidebar-link active" href="announcements.html"><span class="icon">📣</span> עדכונים</a>
+      <a class="sidebar-link" href="events.html"><span class="icon">📅</span> אירועים</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">שירותים</div>
+      <a class="sidebar-link" href="info.html"><span class="icon">📚</span> מאגר מידע</a>
+      <a class="sidebar-link" href="contacts.html"><span class="icon">👤</span> ספר טלפונים</a>
+      <a class="sidebar-link" href="report.html"><span class="icon">📝</span> דיווח ובקשות</a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">מערכות</div>
+      <a class="sidebar-link" href="#"><span class="icon">⏱️</span> מרכב"ה</a>
+      <a class="sidebar-link" href="#"><span class="icon">🎫</span> TopDesk</a>
+    </div>
+  </nav>
+  <main class="main">
+    <div class="page-header">
+      <div class="page-title"><h1>📣 עדכונים ומודעות</h1><p>הודעות מהנהלה ויחידות המשרד</p></div>
+    </div>
+
+    <div class="summary-row" id="summary-row"></div>
+
+    <div class="filter-row" id="filter-row">
+      <span style="font-size:13px;color:var(--text2);font-weight:600">סינון:</span>
+      <button class="filter-chip active" data-f="all" onclick="filterAnn('all',this)">הכל</button>
+    </div>
+
+    <div class="announcements-col" id="ann-col"></div>
+  </main>
+</div>
+<script src="../shared/theme.js"></script>
+<script src="../shared/data.js"></script>
+<script src="../shared/walkme.js"></script>
+<script>
+const d = PortalData;
+document.getElementById('user-av').textContent = d.user.firstName[0];
+document.getElementById('user-nm').textContent = d.user.name;
+
+// Summary
+const counts = { high:0, medium:0, low:0 };
+d.announcements.forEach(a => counts[a.priority]++);
+const sumEl = document.getElementById('summary-row');
+const pConfig = { high:{color:'#ef4444',label:'דחוף'}, medium:{color:'#f59e0b',label:'רגיל'}, low:{color:'#10b981',label:'מידע'} };
+Object.entries(counts).forEach(([p,c]) => {
+  sumEl.innerHTML += `<div class="summary-pill">
+    <div class="summary-dot" style="background:${pConfig[p].color}"></div>
+    <span class="summary-count" style="color:${pConfig[p].color}">${c}</span>
+    <span style="color:var(--text2);font-size:12px">${pConfig[p].label}</span>
+  </div>`;
+});
+
+// Categories filter
+const cats = [...new Set(d.announcements.map(a => a.category))];
+const fr = document.getElementById('filter-row');
+cats.forEach(c => {
+  fr.innerHTML += `<button class="filter-chip" data-f="${c}" onclick="filterAnn('${c}',this)">${c}</button>`;
+});
+
+let activeFilter = 'all';
+function filterAnn(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAnn();
+}
+
+function renderAnn() {
+  const items = activeFilter === 'all' ? d.announcements : d.announcements.filter(a => a.category === activeFilter);
+  const col = document.getElementById('ann-col');
+  const catColors = { 'נהלים':'#0ea5e9', 'הדרכות':'#10b981', 'כללי':'#7c3aed', 'בטחון מידע':'#ef4444' };
+
+  col.innerHTML = items.map((a, i) => `
+    <div class="ann-card">
+      <div class="ann-card-top">
+        <div class="ann-side ${a.priority}"></div>
+        <div class="ann-content">
+          <div class="ann-header">
+            <div class="ann-title">${a.title}</div>
+            ${i < 2 ? '<span class="ann-new">חדש</span>' : ''}
+          </div>
+          <div class="ann-text">${a.excerpt}</div>
+          <div class="ann-footer">
+            <span class="ann-cat-badge" style="background:${catColors[a.category]||'#64748b'}22;color:${catColors[a.category]||'#94a3b8'}">${a.category}</span>
+            <span class="ann-meta-text">📅 ${a.date}</span>
+            <span class="ann-author">✍️ ${a.author}</span>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+renderAnn();
+
+// WalkMe
+const walkme = new WalkMe([
+  { target: '.summary-row',  title: 'סיכום עדכונים',  text: 'ראו כמה עדכונים יש לפי רמת עדיפות — דחוף, רגיל ומידע.' },
+  { target: '#filter-row',   title: 'סינון לפי קטגוריה', text: 'לחצו על קטגוריה לסינון העדכונים — נהלים, הדרכות, בטחון מידע ועוד.' },
+  { target: '.ann-card',     title: 'כרטיס עדכון',     text: 'הפס הצבעוני מצד ימין מציין דחיפות. לחצו לקריאת העדכון המלא.' }
+], { accent:'#00c2e0', bg:'#0d1629', border:'#1e3358', textPrimary:'#e2eaf8', textSecondary:'#8fa3c8' });
+document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
+</script>
+<script src="../shared/switcher.js"></script>
+<script src="../shared/discover.js"></script>
+</body>
+</html>
