@@ -3,56 +3,28 @@
 
 (function() {
 
-  // ── Theme definitions per option ────────────────────────────────────
+  // ── Theme definitions per option (dark + light per option) ──────────
   const THEMES = {
     'option-1': {
-      agentName: 'CTRL',
-      agentSubtitle: 'סייען פיקוד',
-      agentIcon: '⚡',
+      agentName: 'CTRL', agentSubtitle: 'סייען פיקוד', agentIcon: '⚡',
       btnBg: 'linear-gradient(135deg, #00c2e0 0%, #7c3aed 100%)',
-      bg: '#0d1629',
-      border: '#1e3358',
-      textPrimary: '#e2eaf8',
-      textSecondary: '#8fa3c8',
-      accent: '#00c2e0',
-      accentAlpha: 'rgba(0,194,224,0.12)',
-      bubbleAgent: '#111d35',
       bubbleUser: 'linear-gradient(135deg, #00c2e0, #0090a8)',
-      headerBg: '#0a1020',
-      inputBg: '#111d35',
+      dark:  { bg:'#0d1629', border:'#1e3358', textPrimary:'#e2eaf8', textSecondary:'#8fa3c8', accent:'#00c2e0', accentAlpha:'rgba(0,194,224,0.12)', bubbleAgent:'#111d35', headerBg:'#0a1020', inputBg:'#111d35' },
+      light: { bg:'#ffffff', border:'#d4dce8', textPrimary:'#1a2b4a', textSecondary:'#5a7090', accent:'#0090a8', accentAlpha:'rgba(0,144,168,0.10)', bubbleAgent:'#edf2f8', headerBg:'#f8fafc', inputBg:'#edf2f8' },
     },
     'option-2': {
-      agentName: 'עוזר הפורטל',
-      agentSubtitle: 'שירות עובדים',
-      agentIcon: '🏛️',
+      agentName: 'עוזר הפורטל', agentSubtitle: 'שירות עובדים', agentIcon: '🏛️',
       btnBg: '#0e4d9b',
-      bg: '#ffffff',
-      border: '#dde1e7',
-      textPrimary: '#1a2b4a',
-      textSecondary: '#5a6474',
-      accent: '#0e4d9b',
-      accentAlpha: 'rgba(14,77,155,0.08)',
-      bubbleAgent: '#f0f4ff',
       bubbleUser: '#0e4d9b',
-      headerBg: '#f7f9fc',
-      inputBg: '#f0f2f5',
+      dark:  { bg:'#0d1629', border:'#1e3358', textPrimary:'#e2eaf8', textSecondary:'#8fa3c8', accent:'#4d9bf5', accentAlpha:'rgba(77,155,245,0.12)', bubbleAgent:'#111d35', headerBg:'#0a1020', inputBg:'#111d35' },
+      light: { bg:'#ffffff', border:'#dde1e7', textPrimary:'#1a2b4a', textSecondary:'#5a6474', accent:'#0e4d9b', accentAlpha:'rgba(14,77,155,0.08)', bubbleAgent:'#f0f4ff', headerBg:'#f7f9fc', inputBg:'#f0f2f5' },
     },
     'option-3': {
-      agentName: 'Sparks',
-      agentSubtitle: 'הסייע החכם',
-      agentIcon: '✨',
+      agentName: 'Sparks', agentSubtitle: 'הסייע החכם', agentIcon: '✨',
       btnBg: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)',
-      bg: 'rgba(12,9,36,0.97)',
-      border: 'rgba(167,139,250,0.22)',
-      textPrimary: '#f0f0ff',
-      textSecondary: 'rgba(240,240,255,0.55)',
-      accent: '#a78bfa',
-      accentAlpha: 'rgba(167,139,250,0.1)',
-      bubbleAgent: 'rgba(255,255,255,0.06)',
       bubbleUser: 'linear-gradient(135deg, #7c3aed, #a78bfa)',
-      headerBg: 'rgba(255,255,255,0.04)',
-      inputBg: 'rgba(255,255,255,0.05)',
-      glass: true,
+      dark:  { bg:'rgba(12,9,36,0.97)', border:'rgba(167,139,250,0.22)', textPrimary:'#f0f0ff', textSecondary:'rgba(240,240,255,0.55)', accent:'#a78bfa', accentAlpha:'rgba(167,139,250,0.1)', bubbleAgent:'rgba(255,255,255,0.06)', headerBg:'rgba(255,255,255,0.04)', inputBg:'rgba(255,255,255,0.05)', glass:true },
+      light: { bg:'#faf7ff', border:'rgba(124,58,237,0.2)', textPrimary:'#1a0a40', textSecondary:'#6b46c1', accent:'#7c3aed', accentAlpha:'rgba(124,58,237,0.08)', bubbleAgent:'#ede7ff', headerBg:'#f3eeff', inputBg:'#ede7ff', glass:false },
     },
   };
 
@@ -64,43 +36,52 @@
   }
 
   const opt = detectOption();
-  const T = THEMES[opt];
+  const T = THEMES[opt]; // non-color props (name, icon, btnBg, bubbleUser)
 
-  // ── CSS ─────────────────────────────────────────────────────────────
-  const css = `
+  // Returns color set — CONTRAST to site theme:
+  // site light → chat dark | site dark → chat light
+  function getColors() {
+    const isLight = document.documentElement.classList.contains('light-mode');
+    return isLight ? T.dark : T.light;
+  }
+
+  // ── CSS (rebuilt on theme toggle) ────────────────────────────────────
+  function buildCSS(C) {
+    return `
     .pa-fab {
       position:fixed; bottom:24px; right:24px; z-index:8500;
       width:58px; height:58px; border-radius:50%; border:none; cursor:pointer;
       background:${T.btnBg}; color:#fff; font-size:24px;
       display:flex; align-items:center; justify-content:center;
       box-shadow:0 4px 20px rgba(0,0,0,0.35);
-      transition:transform 0.2s, box-shadow 0.2s;
+      transition:transform 0.2s, box-shadow 0.2s, background 0.3s;
       animation:pa-pulse 3s ease-in-out infinite;
     }
     .pa-fab:hover { transform:scale(1.1); box-shadow:0 6px 28px rgba(0,0,0,0.45); animation:none; }
     .pa-fab.open  { transform:scale(0.9); animation:none; }
     @keyframes pa-pulse {
       0%,100% { box-shadow:0 4px 20px rgba(0,0,0,0.35); }
-      50%      { box-shadow:0 4px 20px rgba(0,0,0,0.35), 0 0 0 8px ${T.accentAlpha}; }
+      50%      { box-shadow:0 4px 20px rgba(0,0,0,0.35), 0 0 0 8px ${C.accentAlpha}; }
     }
 
     .pa-win {
       position:fixed; bottom:94px; right:24px; z-index:8500;
       width:380px; height:560px; border-radius:20px;
       display:flex; flex-direction:column; overflow:hidden;
-      background:${T.bg}; border:1.5px solid ${T.border};
+      background:${C.bg}; border:1.5px solid ${C.border};
       box-shadow:0 24px 60px rgba(0,0,0,0.5);
       direction:rtl; font-family:'Heebo',sans-serif;
       opacity:0; transform:scale(0.88) translateY(12px); pointer-events:none;
-      transition:opacity 0.22s ease, transform 0.22s ease;
-      ${T.glass ? 'backdrop-filter:blur(16px);' : ''}
+      transition:opacity 0.22s ease, transform 0.22s ease, background 0.3s, border-color 0.3s;
+      ${C.glass ? 'backdrop-filter:blur(16px);' : ''}
     }
     .pa-win.show { opacity:1; transform:scale(1) translateY(0); pointer-events:all; }
 
     .pa-hdr {
       padding:13px 14px 11px; flex-shrink:0;
       display:flex; align-items:center; gap:10px;
-      background:${T.headerBg}; border-bottom:1px solid ${T.border};
+      background:${C.headerBg}; border-bottom:1px solid ${C.border};
+      transition:background 0.3s, border-color 0.3s;
     }
     .pa-av {
       width:34px; height:34px; border-radius:50%; flex-shrink:0;
@@ -108,54 +89,55 @@
       justify-content:center; font-size:17px;
     }
     .pa-hdr-info { flex:1; }
-    .pa-nm  { font-size:14px; font-weight:700; color:${T.textPrimary}; line-height:1.2; }
-    .pa-sub { font-size:11px; color:${T.textSecondary}; }
+    .pa-nm  { font-size:14px; font-weight:700; color:${C.textPrimary}; line-height:1.2; transition:color 0.3s; }
+    .pa-sub { font-size:11px; color:${C.textSecondary}; transition:color 0.3s; }
     .pa-dot { width:7px; height:7px; background:#22c55e; border-radius:50%; flex-shrink:0; }
     .pa-x   {
-      background:none; border:none; color:${T.textSecondary};
+      background:none; border:none; color:${C.textSecondary};
       cursor:pointer; font-size:17px; line-height:1; padding:2px 4px;
       transition:color 0.15s;
     }
-    .pa-x:hover { color:${T.textPrimary}; }
+    .pa-x:hover { color:${C.textPrimary}; }
 
     .pa-msgs {
       flex:1; overflow-y:auto; padding:14px 12px; display:flex;
       flex-direction:column; gap:9px; scroll-behavior:smooth;
     }
     .pa-msgs::-webkit-scrollbar { width:3px; }
-    .pa-msgs::-webkit-scrollbar-thumb { background:${T.border}; border-radius:2px; }
+    .pa-msgs::-webkit-scrollbar-thumb { background:${C.border}; border-radius:2px; }
 
     .pa-starters { display:flex; flex-direction:column; gap:7px; }
-    .pa-sl { font-size:11px; color:${T.textSecondary}; margin-bottom:1px; }
+    .pa-sl { font-size:11px; color:${C.textSecondary}; margin-bottom:1px; }
     .pa-s {
-      background:transparent; border:1px solid ${T.border};
-      border-radius:11px; padding:9px 13px; color:${T.textPrimary};
+      background:transparent; border:1px solid ${C.border};
+      border-radius:11px; padding:9px 13px; color:${C.textPrimary};
       font-size:13px; text-align:right; cursor:pointer; font-family:inherit;
       transition:all 0.16s; line-height:1.4;
     }
-    .pa-s:hover { border-color:${T.accent}; color:${T.accent}; background:${T.accentAlpha}; }
+    .pa-s:hover { border-color:${C.accent}; color:${C.accent}; background:${C.accentAlpha}; }
 
     .pa-divider {
-      font-size:11px; color:${T.textSecondary}; text-align:center;
+      font-size:11px; color:${C.textSecondary}; text-align:center;
       padding:4px 0; opacity:0.6;
     }
 
     .pa-m {
       max-width:83%; padding:9px 13px; border-radius:14px;
       font-size:13.5px; line-height:1.6; word-break:break-word;
+      transition:background 0.3s, color 0.3s, border-color 0.3s;
     }
     .pa-m.u { align-self:flex-start; background:${T.bubbleUser}; color:#fff; border-radius:14px 14px 4px 14px; }
     .pa-m.a {
-      align-self:flex-end; background:${T.bubbleAgent}; color:${T.textPrimary};
-      border:1px solid ${T.border}; border-radius:14px 14px 14px 4px;
+      align-self:flex-end; background:${C.bubbleAgent}; color:${C.textPrimary};
+      border:1px solid ${C.border}; border-radius:14px 14px 14px 4px;
     }
     .pa-m.t {
-      align-self:flex-end; background:${T.bubbleAgent}; border:1px solid ${T.border};
+      align-self:flex-end; background:${C.bubbleAgent}; border:1px solid ${C.border};
       border-radius:14px 14px 14px 4px; padding:12px 15px;
     }
     .pa-dots { display:flex; gap:4px; align-items:center; }
     .pa-dots span {
-      width:6px; height:6px; background:${T.textSecondary}; border-radius:50%;
+      width:6px; height:6px; background:${C.textSecondary}; border-radius:50%;
       animation:pa-d 1.2s ease-in-out infinite;
     }
     .pa-dots span:nth-child(2) { animation-delay:0.2s; }
@@ -166,17 +148,18 @@
     }
 
     .pa-inp-row {
-      padding:9px 11px; border-top:1px solid ${T.border};
+      padding:9px 11px; border-top:1px solid ${C.border};
       display:flex; gap:7px; align-items:center; flex-shrink:0;
+      transition:border-color 0.3s;
     }
     .pa-inp {
-      flex:1; background:${T.inputBg}; border:1px solid ${T.border};
-      border-radius:10px; padding:8px 11px; color:${T.textPrimary};
+      flex:1; background:${C.inputBg}; border:1px solid ${C.border};
+      border-radius:10px; padding:8px 11px; color:${C.textPrimary};
       font-size:13px; font-family:inherit; direction:rtl; outline:none;
-      transition:border-color 0.18s;
+      transition:border-color 0.18s, background 0.3s, color 0.3s;
     }
-    .pa-inp::placeholder { color:${T.textSecondary}; }
-    .pa-inp:focus { border-color:${T.accent}; }
+    .pa-inp::placeholder { color:${C.textSecondary}; }
+    .pa-inp:focus { border-color:${C.accent}; }
     .pa-send {
       width:34px; height:34px; border-radius:9px; border:none;
       background:${T.btnBg}; color:#fff; cursor:pointer;
@@ -185,13 +168,23 @@
     }
     .pa-send:hover { opacity:0.85; transform:scale(1.06); }
   `;
-
-  if (!document.getElementById('pa-css')) {
-    const s = document.createElement('style');
-    s.id = 'pa-css';
-    s.textContent = css;
-    document.head.appendChild(s);
   }
+
+  function applyCSS() {
+    const el = document.getElementById('pa-css') || (() => {
+      const s = document.createElement('style'); s.id = 'pa-css';
+      document.head.appendChild(s); return s;
+    })();
+    el.textContent = buildCSS(getColors());
+  }
+
+  applyCSS();
+
+  // Rebuild CSS whenever light/dark class changes on <html>
+  new MutationObserver(applyCSS).observe(
+    document.documentElement,
+    { attributes: true, attributeFilter: ['class'] }
+  );
 
   // ── State ────────────────────────────────────────────────────────────
   const LS_KEY = 'portal-agent';
