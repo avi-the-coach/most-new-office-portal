@@ -198,9 +198,9 @@ function renderAnn() {
 renderAnn();
 
 const walkme = new WalkMe([
-  { target: '.summary-row', title: 'סיכום עדכונים', text: 'ראו כמה עדכונים יש לפי רמת עדיפות.' },
-  { target: '#filter-row', title: 'סינון לפי קטגוריה', text: 'לחצו על קטגוריה לסינון העדכונים.' },
-  { target: '.ann-card', title: 'כרטיס עדכון', text: 'הפס הצבעוני מציין דחיפות. לחצו לקריאת העדכון המלא.' }
+  { target: '.summary-row', title: 'סיכום עדכונים', text: 'ראו כמה עדכונים יש לפי רמת עדיפות.', speech: 'למעלה רואים סיכום מהיר של כל העדכונים. כמה דחופים, כמה רגילים, וכמה לידיעה בלבד. טוב להתחיל פה כדי להבין מה מחכה.' },
+  { target: '#filter-row', title: 'סינון לפי קטגוריה', text: 'לחצו על קטגוריה לסינון העדכונים.', speech: 'אפשר לסנן לפי קטגוריה. לחצו על מה שמעניין אתכם ותראו רק את העדכונים הרלוונטיים.' },
+  { target: '.ann-card', title: 'כרטיס עדכון', text: 'הפס הצבעוני מציין דחיפות. לחצו לקריאת העדכון המלא.', speech: 'כל עדכון מוצג ככרטיס. שימו לב לפס הצבעוני בצד, אדום זה דחוף, צהוב זה רגיל, ירוק זה לידיעה. לחצו על הכרטיס לקריאה המלאה.' }
 ], { accent:'#0e4d9b', bg:'#fff', border:'#dde1e7', textPrimary:'#1a2b4a', textSecondary:'#5a6474' });
 document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
 </script>

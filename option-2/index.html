@@ -465,13 +465,13 @@ window.addEventListener('pageshow', refreshDynamic);
 window.addEventListener('focus', refreshDynamic);
 
 const walkme = new WalkMe([
-  { target: '#theme-toggle-mount', title: 'בחרו את המראה שלכם 🎨', text: 'עברו בין מצב כהה לבהיר לפי הטעם שלכם.' },
-  { target: '#greeting-section', title: 'ברוכים הבאים!', text: 'כאן תמצאו את הפורטל הממשלתי. בואו נסייר.' },
-  { target: '#search-bar', title: 'חיפוש מהיר', text: 'חפשו מסמכים, אנשי קשר ונהלים ממקום אחד.' },
-  { target: '#stats-row', title: 'לוח מצב אישי', text: 'פניות פתוחות, בקשות ממתינות, הודעות וימי חופשה.' },
-  { target: '#quicklinks-widget', title: 'גישה מהירה', text: 'קיצורי דרך למרכב"ה, TopDesk ועוד.' },
-  { target: '#birthdays-widget', title: 'ימי הולדת', text: 'עקבו אחרי ימי הולדת של עמיתים השבוע.' },
-  { target: '.topnav', title: 'ניווט בפורטל', text: 'הניווט הופיע בשורה עליונה — לחצו על כל לשונית לניווט.' }
+  { target: '#theme-toggle-mount', title: 'בחרו את המראה שלכם 🎨', text: 'עברו בין מצב כהה לבהיר לפי הטעם שלכם.', speech: 'הנה, אפשר לשנות את המראה של הפורטל. רוצים רקע בהיר? כהה? זה לגמרי לפי הטעם שלכם, והבחירה נשמרת גם כשעוברים בין דפים.' },
+  { target: '#greeting-section', title: 'ברוכים הבאים!', text: 'כאן תמצאו את הפורטל הממשלתי. בואו נסייר.', speech: 'ברוכים הבאים לפורטל העובדים. זה הדף הראשי שממנו מתחילים את יום העבודה. הכל נגיש מכאן, בואו נסתכל יחד.' },
+  { target: '#search-bar', title: 'חיפוש מהיר', text: 'חפשו מסמכים, אנשי קשר ונהלים ממקום אחד.', speech: 'פה אפשר לחפש כל דבר. מסמך, איש קשר, נוהל. פשוט מתחילים לכתוב והתוצאות מופיעות מיד.' },
+  { target: '#stats-row', title: 'לוח מצב אישי', text: 'פניות פתוחות, בקשות ממתינות, הודעות וימי חופשה.', speech: 'פה רואים במבט אחד מה המצב. כמה פניות פתוחות, הודעות שמחכות, וכמה ימי חופשה נשארו לכם.' },
+  { target: '#quicklinks-widget', title: 'גישה מהירה', text: 'קיצורי דרך למרכב"ה, TopDesk ועוד.', speech: 'קיצורי דרך למערכות שמשתמשים בהן הכי הרבה. לחיצה אחת ואתם שם, בלי לחפש.' },
+  { target: '#birthdays-widget', title: 'ימי הולדת', text: 'עקבו אחרי ימי הולדת של עמיתים השבוע.', speech: 'וכאן אפשר לראות מי חוגג יום הולדת השבוע. שלא תשכחו לאחל!' },
+  { target: '.topnav', title: 'ניווט בפורטל', text: 'הניווט הופיע בשורה עליונה — לחצו על כל לשונית לניווט.', speech: 'הניווט הראשי נמצא בסרגל העליון. לחצו על כל לשונית כדי לעבור בין חלקי הפורטל.' }
 ], { accent:'#0e4d9b', bg:'#fff', border:'#dde1e7', textPrimary:'#1a2b4a', textSecondary:'#5a6474' });
 
 document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));

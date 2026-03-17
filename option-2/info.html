@@ -216,10 +216,10 @@ recent.slice(0,4).forEach(doc => {
 });
 
 const walkme = new WalkMe([
-  { target: '.hero-search', title: 'חיפוש מסמכים', text: 'חפשו לפי שם מסמך או קטגוריה.' },
-  { target: '.categories-grid', title: 'קטגוריות', text: 'לחצו על קטגוריה לסינון המסמכים.' },
-  { target: '.docs-list', title: 'מסמכים', text: 'כל מסמך מציג שם, קטגוריה, תאריך עדכון וצפיות.' },
-  { target: '#popular-list', title: 'הנצפים ביותר', text: 'המסמכים הפופולריים ביותר בפורטל.' }
+  { target: '.hero-search', title: 'חיפוש מסמכים', text: 'חפשו לפי שם מסמך או קטגוריה.', speech: 'מתחילים בחיפוש. כותבים שם מסמך או נושא, והרשימה מתעדכנת מיד. אין צורך ללחוץ כלום.' },
+  { target: '.categories-grid', title: 'קטגוריות', text: 'לחצו על קטגוריה לסינון המסמכים.', speech: 'אפשר גם לסנן לפי קטגוריה. לחצו על אחת מהקטגוריות ותראו רק את המסמכים הרלוונטיים לאותו תחום.' },
+  { target: '.docs-list', title: 'מסמכים', text: 'כל מסמך מציג שם, קטגוריה, תאריך עדכון וצפיות.', speech: 'כל מסמך מציג את השם, מאיזו קטגוריה, מתי עודכן לאחרונה, וכמה אנשים כבר קראו אותו.' },
+  { target: '#popular-list', title: 'הנצפים ביותר', text: 'המסמכים הפופולריים ביותר בפורטל.', speech: 'וכאן המסמכים הכי פופולריים בארגון. אם לא יודעים מאיפה להתחיל, כדאי לעבור על אלה קודם.' }
 ], { accent:'#0e4d9b', bg:'#fff', border:'#dde1e7', textPrimary:'#1a2b4a', textSecondary:'#5a6474' });
 document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
 

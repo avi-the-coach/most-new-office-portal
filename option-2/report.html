@@ -354,9 +354,9 @@ function resetForm() {
 renderHistory(false);
 
 const walkme = new WalkMe([
-  { target: '#progress-bar', title: 'תהליך שלושה שלבים', text: 'סוג הדיווח, מילוי פרטים ואישור.' },
-  { target: '#type-grid', title: 'בחרו סוג דיווח', text: 'לחצו על הסוג המתאים.' },
-  { target: '#requests-section', title: 'הבקשות שלי', text: 'כל הבקשות שהגשתם מוצגות כאן.' }
+  { target: '#progress-bar', title: 'תהליך שלושה שלבים', text: 'סוג הדיווח, מילוי פרטים ואישור.', speech: 'הגשת בקשה מחולקת לשלושה שלבים פשוטים. קודם בוחרים על מה הפנייה, אחר כך ממלאים פרטים, ובסוף בודקים ושולחים.' },
+  { target: '#type-grid', title: 'בחרו סוג דיווח', text: 'לחצו על הסוג המתאים.', speech: 'בשלב הראשון בוחרים על מה הפנייה. תקלה טכנית, בקשת ציוד, תחזוקה או משהו אחר. לחצו על הכרטיס המתאים.' },
+  { target: '#requests-section', title: 'הבקשות שלי', text: 'כל הבקשות שהגשתם מוצגות כאן.', speech: 'ולמטה אפשר לראות את כל הבקשות שכבר הגשתם עם הסטטוס העדכני של כל אחת. ככה תמיד יודעים מה קורה.' }
 ], { accent:'#0e4d9b', bg:'#fff', border:'#dde1e7', textPrimary:'#1a2b4a', textSecondary:'#5a6474' });
 document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
 </script>

@@ -239,9 +239,9 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 var wm3 = { accent:'#a78bfa', bg:'rgba(10,8,32,0.97)', border:'rgba(167,139,250,0.22)', textPrimary:'#f0f0ff', textSecondary:'rgba(240,240,255,0.6)' };
 var walkme = new WalkMe([
-  { target: '#stepBar',      title: 'תהליך שלושה שלבים', text: 'שלב 1: בחרו סוג פנייה. שלב 2: מלאו פרטים. שלב 3: אישור ושליחה.' },
-  { target: '#stepContent',  title: 'בחרו סוג פנייה',    text: 'לחצו על הכרטיס המתאים — תקלה טכנית, רכש, אבטחה, תלונה ועוד.' },
-  { target: '#reqList',      title: 'הבקשות שלי 📋',     text: 'כל הבקשות שהגשתם מוצגות כאן עם סטטוס עדכני.' }
+  { target: '#stepBar',      title: 'תהליך שלושה שלבים', text: 'שלב 1: בחרו סוג פנייה. שלב 2: מלאו פרטים. שלב 3: אישור ושליחה.', speech: 'הגשת בקשה מחולקת לשלושה שלבים פשוטים. קודם בוחרים על מה הפנייה, אחר כך ממלאים פרטים, ובסוף בודקים ושולחים.' },
+  { target: '#stepContent',  title: 'בחרו סוג פנייה',    text: 'לחצו על הכרטיס המתאים — תקלה טכנית, רכש, אבטחה, תלונה ועוד.', speech: 'בשלב הראשון בוחרים על מה הפנייה. יש כאן כמה סוגים, תקלה טכנית, בקשת רכש, אבטחה, ועוד. לחצו על הכרטיס המתאים.' },
+  { target: '#reqList',      title: 'הבקשות שלי',         text: 'כל הבקשות שהגשתם מוצגות כאן עם סטטוס עדכני.', speech: 'ולמטה רואים את כל הבקשות שכבר הגשתם. לצד כל בקשה מוצג הסטטוס העדכני שלה. ככה תמיד יודעים מה קורה.' }
 ], wm3);
 var wmm = document.getElementById('walkme-trigger-mount');
 if (wmm) wmm.appendChild(WalkMe.createTriggerButton());

@@ -231,9 +231,9 @@ if(!holidays.length)holEl.innerHTML='<div style="font-size:13px;color:var(--text
 holidays.forEach(e=>{const dt=new Date(e.date);holEl.innerHTML+=`<div class="event-row"><div class="event-left-bar" style="background:#f59e0b"></div><div class="event-body"><div class="event-title">${e.title}</div><div class="event-time">${dt.toLocaleDateString('he-IL')}</div></div></div>`;});
 renderCalendar();
 const walkme=new WalkMe([
-  {target:'#legend',title:'מקרא אירועים',text:'כל סוג אירוע מסומן בצבע.'},
-  {target:'.calendar-card',title:'לוח שנה',text:'לחצו על תאריך עם אירועים לראות פרטים.'},
-  {target:'.events-sidebar',title:'אירועים קרובים',text:'כאן אירועים הבאים וחגים.'}
+  {target:'#legend',title:'מקרא אירועים',text:'כל סוג אירוע מסומן בצבע.',speech:'שימו לב למקרא הצבעים. כל סוג אירוע בצבע שלו. ישיבות, הדרכות, מועדים אחרונים וחגים. ככה קל לזהות במבט מה מחכה לכם.'},
+  {target:'.calendar-card',title:'לוח שנה',text:'לחצו על תאריך עם אירועים לראות פרטים.',speech:'בלוח השנה אפשר לראות את כל האירועים לפי תאריך. ימים שיש בהם אירועים בולטים. לחצו על תאריך ותראו מה קורה בו.'},
+  {target:'.events-sidebar',title:'אירועים קרובים',text:'כאן אירועים הבאים וחגים.',speech:'בצד מוצגים האירועים הקרובים לפי סדר. ככה לא צריך לחפש בלוח השנה, הרלוונטי ביותר כבר מחכה פה.'}
 ],{accent:'#0e4d9b',bg:'#fff',border:'#dde1e7',textPrimary:'#1a2b4a',textSecondary:'#5a6474'});
 document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
 </script>

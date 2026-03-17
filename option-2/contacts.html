@@ -214,10 +214,10 @@ document.getElementById('contact-search').addEventListener('input', function() {
 renderContacts();
 
 const walkme = new WalkMe([
-  { target: '#contact-search', title: 'חיפוש איש קשר', text: 'חפשו לפי שם, תפקיד או יחידה.' },
-  { target: '.unit-filters', title: 'סינון לפי יחידה', text: 'לחצו על שם יחידה לסינון.' },
-  { target: '.view-toggle', title: 'תצוגה', text: 'עברו בין כרטיסים לרשימה.' },
-  { target: '.contacts-grid', title: 'כרטיס איש קשר', text: 'לחצו על שלוחה או מייל ליצירת קשר.' }
+  { target: '#contact-search', title: 'חיפוש איש קשר', text: 'חפשו לפי שם, תפקיד או יחידה.', speech: 'מחפשים מישהו? כותבים שם, תפקיד או יחידה והכרטיסים מתעדכנים מיד. מהיר ופשוט.' },
+  { target: '.unit-filters', title: 'סינון לפי יחידה', text: 'לחצו על שם יחידה לסינון.', speech: 'אם יודעים לאיזו יחידה צריך לפנות, לחצו עליה כאן ותראו רק את האנשים שלה.' },
+  { target: '.view-toggle', title: 'תצוגה', text: 'עברו בין כרטיסים לרשימה.', speech: 'יש שתי אפשרויות תצוגה. כרטיסים גדולים עם כל הפרטים, או רשימה מרוכזת. תבחרו מה נוח יותר.' },
+  { target: '.contacts-grid', title: 'כרטיס איש קשר', text: 'לחצו על שלוחה או מייל ליצירת קשר.', speech: 'כל כרטיס מציג שם, תפקיד ויחידה. לחצו על הטלפון לשיחה ישירה, או על המייל לשליחת הודעה.' }
 ], { accent:'#0e4d9b', bg:'#fff', border:'#dde1e7', textPrimary:'#1a2b4a', textSecondary:'#5a6474' });
 document.getElementById('walkme-trigger-mount').appendChild(WalkMe.createTriggerButton('🎯 סיור'));
 </script>

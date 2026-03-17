@@ -32,8 +32,12 @@ class WalkMe {
   _speakCurrent() {
     const step = this.steps[this.currentStep];
     if (!step) return;
-    const clean = step.text.replace(/<[^>]+>/g, '');
-    this._speak(step.title + '. ' + clean);
+    if (step.speech) {
+      this._speak(step.speech);
+    } else {
+      const clean = step.text.replace(/<[^>]+>/g, '');
+      this._speak(step.title + '. ' + clean);
+    }
   }
 
   _stopSpeech() {
