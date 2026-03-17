@@ -260,9 +260,20 @@
     if (msgs.length === 0) { showStarters(); return; }
     msgsEl.innerHTML = '';
     msgs.forEach(m => appendMsgEl(m.role, m.html));
+    // Add starters inline (synchronous, no timeout) — reliable on refresh/reopen
+    if (!state.pendingAction) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'pa-starters-block';
+      wrapper.innerHTML = `<div class="pa-divider">— מה עוד? —</div>${buildStartersHTML('בחרו פעולה:')}`;
+      wrapper.querySelectorAll('.pa-s').forEach(b =>
+        b.addEventListener('click', () => {
+          wrapper.remove();
+          handleStarterContinue(b.dataset.id, b.textContent.trim());
+        })
+      );
+      msgsEl.appendChild(wrapper);
+    }
     scrollBottom();
-    // Restore starters at bottom after refresh (unless pending action will handle it)
-    if (!state.pendingAction) appendStarters();
   }
 
   // Initial empty-state starters (full greeting)
@@ -292,8 +303,8 @@
         })
       );
       msgsEl.appendChild(wrapper);
-      scrollBottom();
-    }, 400);
+      requestAnimationFrame(() => scrollBottom());
+    }, 200);
   }
 
   function buildStartersHTML(label) {
