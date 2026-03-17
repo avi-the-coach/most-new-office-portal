@@ -252,7 +252,7 @@
     saveState(state);
   }
 
-  if (state.open) openWin();
+  if (state.open && !state.pendingAction) openWin();
 
   // ── Render ───────────────────────────────────────────────────────────
   function renderMessages() {
@@ -261,6 +261,8 @@
     msgsEl.innerHTML = '';
     msgs.forEach(m => appendMsgEl(m.role, m.html));
     scrollBottom();
+    // Restore starters at bottom after refresh (unless pending action will handle it)
+    if (!state.pendingAction) appendStarters();
   }
 
   // Initial empty-state starters (full greeting)
@@ -291,7 +293,7 @@
       );
       msgsEl.appendChild(wrapper);
       scrollBottom();
-    }, 900);
+    }, 400);
   }
 
   function buildStartersHTML(label) {
@@ -555,72 +557,115 @@
     delete state.pendingAction;
     saveState(state);
     setTimeout(() => {
-      if (!win.classList.contains('show')) openWin();
       if (action.type === 'fill-req')    doFillReq(action.data.desc);
       else if (action.type === 'search-doc') doFillSearch(action.data.query);
     }, 700);
   }
 
-  async function doFillReq(desc) {
-    const lower = desc.toLowerCase();
-    let typeId = 'it';
-    if (lower.match(/ציוד|עט|נייר|כיסא|שולחן|הזמנה/))    typeId = 'request';
-    else if (lower.match(/תחזוקה|מזגן|חשמל|נזילה|תיקון/)) typeId = 'maintenance';
-    else if (lower.match(/אבטחה|סייבר|פרצה|גנוב/))        typeId = 'security';
-    else if (lower.match(/רכש|רישיון|תוכנה/))              typeId = 'purchase';
-    else if (lower.match(/כוח אדם|חופשה|תנאים|שכר/))      typeId = 'hr';
-
-    // Close chat so the form is visible while being filled
-    closeWin();
-
-    if (opt === 'option-3') {
-      setTimeout(() => {
-        const tile = document.querySelector(`.type-tile[data-id="${typeId}"]`);
-        if (tile) tile.click();
-      }, 300);
-      setTimeout(() => {
-        const t = document.querySelector('#fTitle');
-        if (t) { t.value = desc; t.dispatchEvent(new Event('input')); t.focus(); }
-        const d2 = document.querySelector('#fDesc');
-        if (d2) { d2.value = desc; d2.dispatchEvent(new Event('input')); }
-        document.getElementById('stepContent')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 950);
-    } else {
-      setTimeout(() => {
-        const card = document.querySelector(`.type-card[data-id="${typeId}"]`);
-        if (card) card.click();
-      }, 300);
-      setTimeout(() => {
-        if (typeof window.goStep === 'function') window.goStep(2);
-      }, 550);
-      setTimeout(() => {
-        const t = document.querySelector('#f-title');
-        if (t) { t.value = desc; t.dispatchEvent(new Event('input')); t.focus(); }
-        const d2 = document.querySelector('#f-desc');
-        if (d2) { d2.value = desc; d2.dispatchEvent(new Event('input')); }
-        document.getElementById('step-2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 750);
+  // ── Typewriter helper ────────────────────────────────────────────────
+  async function typeInto(el, text, speed) {
+    speed = speed || 42;
+    el.value = '';
+    el.focus();
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    for (let i = 0; i < text.length; i++) {
+      el.value = text.slice(0, i + 1);
+      el.dispatchEvent(new Event('input'));
+      await new Promise(r => setTimeout(r, speed + Math.random() * 18));
     }
+  }
 
-    // Re-open chat with done message after form is filled
-    setTimeout(() => {
+  async function doFillReq(desc) {
+    try {
+      const lower = desc.toLowerCase();
+      let typeId = 'it';
+      if (lower.match(/ציוד|עט|נייר|כיסא|שולחן|הזמנה/))    typeId = 'request';
+      else if (lower.match(/תחזוקה|מזגן|חשמל|נזילה|תיקון/)) typeId = 'maintenance';
+      else if (lower.match(/אבטחה|סייבר|פרצה|גנוב/))        typeId = 'security';
+      else if (lower.match(/רכש|רישיון|תוכנה/))              typeId = 'request';
+      else if (lower.match(/כוח אדם|חופשה|תנאים|שכר/))      typeId = 'complaint';
+
+      closeWin();
+      await new Promise(r => setTimeout(r, 350));
+
+      if (opt === 'option-3') {
+        // Click tile — it auto-advances to step 2 after 400ms
+        const tile = document.querySelector(`.type-tile[data-id="${typeId}"]`) || document.querySelector('.type-tile');
+        if (tile) tile.click();
+        await new Promise(r => setTimeout(r, 650));
+
+        const t = document.querySelector('#fTitle');
+        if (t) await typeInto(t, desc, 42);
+        await new Promise(r => setTimeout(r, 200));
+        const d2 = document.querySelector('#fDesc');
+        if (d2) await typeInto(d2, desc, 22);
+
+      } else {
+        // Click type card (fallback to first card if typeId not found)
+        const card = document.querySelector(`.type-card[data-id="${typeId}"]`) || document.querySelector('.type-card');
+        if (card) {
+          card.click();
+          if (typeof window.selectType === 'function') window.selectType(card.dataset.id, card);
+        }
+        await new Promise(r => setTimeout(r, 350));
+
+        // Force step 2 open via direct DOM — no alert guards
+        document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+        const s2 = document.getElementById('step-2');
+        if (s2) {
+          s2.classList.add('active');
+          s2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        // Update progress bar manually — avoids goStep's alert popup
+        [1,2,3].forEach(i => {
+          const dot = document.getElementById('dot-'+i);
+          const lbl = document.getElementById('lbl-'+i);
+          if (!dot || !lbl) return;
+          if (i < 2)      { dot.textContent='✓'; dot.className='prog-dot done';   lbl.className='prog-label done'; }
+          else if (i===2) { dot.textContent='2'; dot.className='prog-dot active'; lbl.className='prog-label active'; }
+          else            { dot.textContent='3'; dot.className='prog-dot';        lbl.className='prog-label'; }
+        });
+        const progLine1 = document.getElementById('line-1');
+        if (progLine1) progLine1.className = 'prog-line done';
+        await new Promise(r => setTimeout(r, 400));
+
+        const t = document.querySelector('#f-title');
+        if (t) await typeInto(t, desc, 42);
+        await new Promise(r => setTimeout(r, 200));
+        const d2 = document.querySelector('#f-desc');
+        if (d2) await typeInto(d2, desc, 22);
+      }
+
+      // Re-open chat with summary
       openWin();
       addMsg('a', 'מילאתי את הטופס. בדקו, עדכנו אם צריך — ואז לחצו שלח.');
       speakText('מילאתי. בדקו ושלחו.');
+    } catch(e) {
+      console.warn('[agent] doFillReq error:', e);
+      openWin();
+      addMsg('a', 'פתחתי את הטופס. אפשר למלא ולשלוח.');
+      speakText('פתחתי את הטופס');
+    } finally {
       appendStarters();
-    }, 1600);
+    }
   }
 
   async function doFillSearch(query) {
-    setTimeout(() => {
-      const el = document.querySelector('#doc-search, .hero-search input, .search-hero input');
-      if (el) { el.value = query; el.dispatchEvent(new Event('input')); }
-    }, 400);
-    await respond(
-      `חיפשתי <strong>"${query}"</strong> במאגר המידע. הנה התוצאות.`,
-      'הנה תוצאות החיפוש',
-      500
-    );
+    closeWin();
+    await new Promise(r => setTimeout(r, 350));
+
+    // Supports option-1/2 (#doc-search) and option-3 (#docSearch / .hero-search-wrap input)
+    const el = document.querySelector('#doc-search, #docSearch, .hero-search input, .hero-search-wrap input');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      await new Promise(r => setTimeout(r, 300));
+      await typeInto(el, query, 60);
+    }
+
+    await new Promise(r => setTimeout(r, 300));
+    openWin();
+    addMsg('a', `הקלדתי "<strong>${query}</strong>" — הנה התוצאות.`);
+    speakText('הנה תוצאות החיפוש');
     appendStarters();
   }
 
