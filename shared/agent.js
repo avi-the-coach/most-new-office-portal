@@ -570,43 +570,45 @@
     else if (lower.match(/רכש|רישיון|תוכנה/))              typeId = 'purchase';
     else if (lower.match(/כוח אדם|חופשה|תנאים|שכר/))      typeId = 'hr';
 
+    // Close chat so the form is visible while being filled
+    closeWin();
+
     if (opt === 'option-3') {
-      // option-3: uses .type-tile, auto-advances to step 2 after 400ms, fields: #fTitle / #fDesc
       setTimeout(() => {
         const tile = document.querySelector(`.type-tile[data-id="${typeId}"]`);
         if (tile) tile.click();
       }, 300);
-      // tile click triggers step 2 after its own 400ms — wait 300+400+200 buffer = 900ms total
       setTimeout(() => {
         const t = document.querySelector('#fTitle');
-        if (t) { t.value = desc; t.dispatchEvent(new Event('input')); }
+        if (t) { t.value = desc; t.dispatchEvent(new Event('input')); t.focus(); }
         const d2 = document.querySelector('#fDesc');
         if (d2) { d2.value = desc; d2.dispatchEvent(new Event('input')); }
+        document.getElementById('stepContent')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 950);
     } else {
-      // option-1/2: .type-card + explicit goStep(2), fields: #f-title / #f-desc
       setTimeout(() => {
         const card = document.querySelector(`.type-card[data-id="${typeId}"]`);
         if (card) card.click();
       }, 300);
       setTimeout(() => {
-        // Advance to step 2 (type card click only selects, doesn't advance)
         if (typeof window.goStep === 'function') window.goStep(2);
       }, 550);
       setTimeout(() => {
         const t = document.querySelector('#f-title');
-        if (t) { t.value = desc; t.dispatchEvent(new Event('input')); }
+        if (t) { t.value = desc; t.dispatchEvent(new Event('input')); t.focus(); }
         const d2 = document.querySelector('#f-desc');
         if (d2) { d2.value = desc; d2.dispatchEvent(new Event('input')); }
+        document.getElementById('step-2')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 750);
     }
 
-    await respond(
-      'פתחתי לך את הטופס ומילאתי את הפרטים.<br>עברו לשלב הבא ואשרו את הבקשה.',
-      'פתחתי את הטופס. אפשר לאשר ולשלוח',
-      1200
-    );
-    appendStarters();
+    // Re-open chat with done message after form is filled
+    setTimeout(() => {
+      openWin();
+      addMsg('a', 'מילאתי את הטופס. בדקו, עדכנו אם צריך — ואז לחצו שלח.');
+      speakText('מילאתי. בדקו ושלחו.');
+      appendStarters();
+    }, 1600);
   }
 
   async function doFillSearch(query) {
