@@ -56,7 +56,6 @@
     },
   };
 
-  // Detect current option from URL
   function detectOption() {
     const p = window.location.pathname + window.location.href;
     if (p.includes('option-3')) return 'option-3';
@@ -87,7 +86,7 @@
 
     .pa-win {
       position:fixed; bottom:94px; right:24px; z-index:8500;
-      width:330px; height:490px; border-radius:20px;
+      width:380px; height:560px; border-radius:20px;
       display:flex; flex-direction:column; overflow:hidden;
       background:${T.bg}; border:1.5px solid ${T.border};
       box-shadow:0 24px 60px rgba(0,0,0,0.5);
@@ -136,6 +135,11 @@
     }
     .pa-s:hover { border-color:${T.accent}; color:${T.accent}; background:${T.accentAlpha}; }
 
+    .pa-divider {
+      font-size:11px; color:${T.textSecondary}; text-align:center;
+      padding:4px 0; opacity:0.6;
+    }
+
     .pa-m {
       max-width:83%; padding:9px 13px; border-radius:14px;
       font-size:13.5px; line-height:1.6; word-break:break-word;
@@ -145,7 +149,10 @@
       align-self:flex-end; background:${T.bubbleAgent}; color:${T.textPrimary};
       border:1px solid ${T.border}; border-radius:14px 14px 14px 4px;
     }
-    .pa-m.t { align-self:flex-end; background:${T.bubbleAgent}; border:1px solid ${T.border}; border-radius:14px 14px 14px 4px; padding:12px 15px; }
+    .pa-m.t {
+      align-self:flex-end; background:${T.bubbleAgent}; border:1px solid ${T.border};
+      border-radius:14px 14px 14px 4px; padding:12px 15px;
+    }
     .pa-dots { display:flex; gap:4px; align-items:center; }
     .pa-dots span {
       width:6px; height:6px; background:${T.textSecondary}; border-radius:50%;
@@ -179,7 +186,6 @@
     .pa-send:hover { opacity:0.85; transform:scale(1.06); }
   `;
 
-  // ── Inject styles ────────────────────────────────────────────────────
   if (!document.getElementById('pa-css')) {
     const s = document.createElement('style');
     s.id = 'pa-css';
@@ -189,16 +195,11 @@
 
   // ── State ────────────────────────────────────────────────────────────
   const LS_KEY = 'portal-agent';
-
-  function loadState() {
-    try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; }
-  }
-  function saveState(st) {
-    try { localStorage.setItem(LS_KEY, JSON.stringify(st)); } catch {}
-  }
+  function loadState() { try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch { return {}; } }
+  function saveState(st) { try { localStorage.setItem(LS_KEY, JSON.stringify(st)); } catch {} }
 
   let state = loadState();
-  let convState = 'idle'; // open-request-q1 | find-doc-q1 | find-contact-q1 | birthday-q1
+  let convState = 'idle';
 
   // ── DOM ──────────────────────────────────────────────────────────────
   const fab = document.createElement('button');
@@ -226,20 +227,17 @@
   `;
 
   document.body.append(fab, win);
-
   const msgsEl  = document.getElementById('pa-msgs');
   const inputEl = document.getElementById('pa-inp');
 
-  // ── Events ───────────────────────────────────────────────────────────
   fab.addEventListener('click', toggleWin);
   document.getElementById('pa-x').addEventListener('click', closeWin);
   document.getElementById('pa-send').addEventListener('click', submit);
   inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
 
-  // ── Open/Close ───────────────────────────────────────────────────────
-  function toggleWin() {
-    win.classList.contains('show') ? closeWin() : openWin();
-  }
+  // ── Open / Close ─────────────────────────────────────────────────────
+  function toggleWin() { win.classList.contains('show') ? closeWin() : openWin(); }
+
   function openWin() {
     win.classList.add('show');
     fab.classList.add('open');
@@ -254,7 +252,6 @@
     saveState(state);
   }
 
-  // Restore open state from previous page
   if (state.open) openWin();
 
   // ── Render ───────────────────────────────────────────────────────────
@@ -262,30 +259,71 @@
     const msgs = state.messages || [];
     if (msgs.length === 0) { showStarters(); return; }
     msgsEl.innerHTML = '';
-    msgs.forEach(m => appendMsg(m.role, m.text));
+    msgs.forEach(m => appendMsgEl(m.role, m.html));
     scrollBottom();
   }
 
+  // Initial empty-state starters (full greeting)
   function showStarters() {
-    const starters = [
-      { id: 'req',     text: '📋 צריך לפתוח בקשה או קריאה' },
-      { id: 'doc',     text: '📄 עזור לי למצוא מסמך' },
-      { id: 'brief',   text: '☀️ מה יש לי היום?' },
-      { id: 'contact', text: '👤 מי מטפל ב...?' },
-      { id: 'bday',    text: '🎂 כתוב ברכה לעמית' },
-    ];
     msgsEl.innerHTML = `
       <div class="pa-m a">שלום! אני ${T.agentName} — כאן לעזור. מה נעשה?</div>
-      <div class="pa-starters">
-        <div class="pa-sl">בחרו נושא או כתבו בחופשיות:</div>
-        ${starters.map(s => `<button class="pa-s" data-id="${s.id}">${s.text}</button>`).join('')}
-      </div>`;
+      ${buildStartersHTML('בחרו נושא או כתבו בחופשיות:')}`;
+    bindStarters(false);
+  }
+
+  // Starters appended after a completed flow
+  function appendStarters() {
+    setTimeout(() => {
+      // Remove existing starters block if any
+      const old = msgsEl.querySelector('.pa-starters-block');
+      if (old) old.remove();
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'pa-starters-block';
+      wrapper.innerHTML = `
+        <div class="pa-divider">— מה עוד? —</div>
+        ${buildStartersHTML('בחרו פעולה:')}`;
+      wrapper.querySelectorAll('.pa-s').forEach(b =>
+        b.addEventListener('click', () => {
+          wrapper.remove();
+          handleStarterContinue(b.dataset.id, b.textContent.trim());
+        })
+      );
+      msgsEl.appendChild(wrapper);
+      scrollBottom();
+    }, 900);
+  }
+
+  function buildStartersHTML(label) {
+    const starters = [
+      { id: 'req',     text: '📋 פתיחת בקשה או קריאה' },
+      { id: 'doc',     text: '📄 חיפוש מסמך' },
+      { id: 'brief',   text: '☀️ מה יש לי היום?' },
+      { id: 'contact', text: '👤 מי מטפל ב...?' },
+      { id: 'bday',    text: '🎂 ברכה לעמית' },
+    ];
+    return `<div class="pa-starters">
+      <div class="pa-sl">${label}</div>
+      ${starters.map(s => `<button class="pa-s" data-id="${s.id}">${s.text}</button>`).join('')}
+    </div>`;
+  }
+
+  function bindStarters(continueMode) {
     msgsEl.querySelectorAll('.pa-s').forEach(b =>
-      b.addEventListener('click', () => handleStarter(b.dataset.id, b.textContent.trim()))
+      b.addEventListener('click', () => {
+        if (continueMode) {
+          const block = b.closest('.pa-starters-block');
+          if (block) block.remove();
+          handleStarterContinue(b.dataset.id, b.textContent.trim());
+        } else {
+          handleStarterFresh(b.dataset.id, b.textContent.trim());
+        }
+      })
     );
   }
 
-  function appendMsg(role, html) {
+  // ── Message helpers ──────────────────────────────────────────────────
+  function appendMsgEl(role, html) {
     const d = document.createElement('div');
     d.className = 'pa-m ' + role;
     d.innerHTML = html;
@@ -297,13 +335,13 @@
     if (!state.messages) state.messages = [];
     state.messages.push({ role, html, ts: Date.now() });
     saveState(state);
-    appendMsg(role, html);
+    appendMsgEl(role, html);
     scrollBottom();
   }
 
   function scrollBottom() { msgsEl.scrollTop = msgsEl.scrollHeight; }
 
-  // ── Typing animation ─────────────────────────────────────────────────
+  // ── Typing + respond ─────────────────────────────────────────────────
   function showTyping() {
     const d = document.createElement('div');
     d.className = 'pa-m t'; d.id = 'pa-typing';
@@ -312,29 +350,50 @@
   }
   function hideTyping() { const e = document.getElementById('pa-typing'); if (e) e.remove(); }
 
-  async function respond(html, delay) {
+  // respond(html, speech, delay)
+  // speech = what TTS reads (short, clean, no emojis) — if omitted, skips TTS
+  async function respond(html, speech, delay) {
+    if (typeof speech === 'number') { delay = speech; speech = null; }
     delay = delay || 850;
     showTyping();
-    await new Promise(r => setTimeout(r, delay + Math.random() * 250));
+    await new Promise(r => setTimeout(r, delay + Math.random() * 200));
     hideTyping();
     addMsg('a', html);
-    speak(html);
+    if (speech) speakText(speech);
   }
 
   // ── Submit ───────────────────────────────────────────────────────────
   function submit() {
     const text = inputEl.value.trim(); if (!text) return;
     inputEl.value = '';
-    // Clear starters area
-    const st = msgsEl.querySelector('.pa-starters');
-    if (st) { msgsEl.innerHTML = ''; addMsg('a', `שלום! אני ${T.agentName} — כאן לעזור. מה נעשה?`); }
+    // Clear initial starters if still showing
+    if (msgsEl.querySelector('.pa-starters') && !state.messages?.length) {
+      msgsEl.innerHTML = '';
+      addMsg('a', `שלום! אני ${T.agentName} — כאן לעזור. מה נעשה?`);
+    }
+    // Remove appended starters block
+    const block = msgsEl.querySelector('.pa-starters-block');
+    if (block) block.remove();
+
     addMsg('u', text);
     processInput(text);
   }
 
-  function handleStarter(id, display) {
+  // Fresh start (clears history)
+  function handleStarterFresh(id, display) {
     msgsEl.innerHTML = '';
+    state.messages = [];
     addMsg('u', display);
+    runFlow(id);
+  }
+
+  // Continue in existing conversation
+  function handleStarterContinue(id, display) {
+    addMsg('u', display);
+    runFlow(id);
+  }
+
+  function runFlow(id) {
     const flows = { req: flowReq, doc: flowDoc, brief: flowBrief, contact: flowContact, bday: flowBday };
     if (flows[id]) flows[id]();
   }
@@ -347,22 +406,31 @@
     if (convState === 'contact-q1') { convState = 'idle'; doContact(t); return; }
     if (convState === 'bday-q1')    { convState = 'idle'; doBday(t); return; }
 
-    if (t.match(/בקשה|קריאה|תקלה|תחזוקה|ציוד|פנייה/))         flowReq();
-    else if (t.match(/מסמך|נוהל|הדרכה|לחפש|חפש/))             flowDoc();
-    else if (t.match(/היום|briefing|סיכום|מה יש|לוח/))        flowBrief();
-    else if (t.match(/מי|קשר|יחידה|מטפל|אחראי/))              flowContact();
-    else if (t.match(/ברכה|יום הולדת|אחל/))                   flowBday();
-    else respond('לא ממש הבנתי. נסו לבחור אחת מהאפשרויות, או נסחו שוב 😊');
+    if      (t.match(/בקשה|קריאה|תקלה|תחזוקה|ציוד|פנייה/)) flowReq();
+    else if (t.match(/מסמך|נוהל|הדרכה|לחפש|חפש/))          flowDoc();
+    else if (t.match(/היום|briefing|סיכום|מה יש|לוח/))      flowBrief();
+    else if (t.match(/מי|קשר|יחידה|מטפל|אחראי/))            flowContact();
+    else if (t.match(/ברכה|יום הולדת|אחל/))                 flowBday();
+    else {
+      respond('לא הבנתי. נסחו שוב, או בחרו אחת מהאפשרויות למטה.', 'לא הבנתי, בחרו מהאפשרויות', 600);
+      appendStarters();
+    }
   }
 
   // ── Flows ────────────────────────────────────────────────────────────
   async function flowReq() {
     convState = 'req-q1';
-    await respond('בטח! ספרו לי בקצרה — במה מדובר?<br><em style="font-size:12px;opacity:0.7">למשל: "מקלדת שבורה", "בקשת ציוד", "תקלה ברשת"</em>');
+    await respond(
+      'בטח! ספרו לי בקצרה — במה מדובר?<br><em style="font-size:12px;opacity:0.65">למשל: "מקלדת שבורה", "בקשת ציוד", "תקלה ברשת"</em>',
+      'ספרו לי מה קרה'
+    );
   }
 
   async function doReq(desc) {
-    await respond('מעולה. מעביר אותכם לדף הבקשות ומכין את הטופס...');
+    await respond(
+      'מעולה. מעביר אתכם לדף הבקשות ומכין את הטופס...',
+      'מעביר לדף הבקשות'
+    );
     state.pendingAction = { type: 'fill-req', data: { desc } };
     saveState(state);
     setTimeout(() => { window.location.href = 'report.html'; }, 1300);
@@ -370,11 +438,17 @@
 
   async function flowDoc() {
     convState = 'doc-q1';
-    await respond('כמובן! מה המסמך שאתם מחפשים? (שם, נושא, קטגוריה)');
+    await respond(
+      'כמובן! מה המסמך שאתם מחפשים? (שם, נושא, קטגוריה)',
+      'מה אתם מחפשים'
+    );
   }
 
   async function doDoc(query) {
-    await respond(`מחפש <strong>"${query}"</strong>... מעביר למאגר המידע.`);
+    await respond(
+      `מחפש <strong>"${query}"</strong>... מעביר למאגר המידע.`,
+      'מעביר למאגר המידע'
+    );
     state.pendingAction = { type: 'search-doc', data: { query } };
     saveState(state);
     setTimeout(() => { window.location.href = 'info.html'; }, 1200);
@@ -382,127 +456,139 @@
 
   async function flowBrief() {
     const d = window.PortalData || {};
-    let html = '<strong>☀️ הסיכום שלך להיום:</strong><br><br>';
+    let html = '<strong>הסיכום שלך להיום:</strong><br><br>';
+    let speechParts = [];
 
-    // Urgent announcements
     const urgent = (d.announcements || []).filter(a => a.priority === 'high');
     if (urgent.length) {
-      html += `🔴 <strong>${urgent.length} עדכון${urgent.length > 1 ? 'ים' : ''} דחוק${urgent.length > 1 ? 'ים' : ''}:</strong><br>`;
+      html += `<strong>${urgent.length} עדכון${urgent.length > 1 ? 'ים' : ''} דחוק${urgent.length > 1 ? 'ים' : ''}:</strong><br>`;
       urgent.slice(0, 2).forEach(a => { html += `&bull; ${a.title}<br>`; });
       html += '<br>';
+      speechParts.push(`${urgent.length} עדכונים דחופים`);
     }
 
-    // Events this week
     const evts = (d.events || []).slice(0, 3);
     if (evts.length) {
-      html += `📅 <strong>אירועים קרובים:</strong><br>`;
+      html += `<strong>אירועים קרובים:</strong><br>`;
       evts.forEach(e => { html += `&bull; ${e.title} — ${e.date}<br>`; });
       html += '<br>';
+      speechParts.push(`${evts.length} אירועים קרובים`);
     }
 
-    // Birthdays soon
     const bdays = (d.birthdays || []).filter(b => b.daysLeft <= 7);
     if (bdays.length) {
-      html += `🎂 <strong>ימי הולדת בקרוב:</strong> ${bdays.map(b => b.name).join(', ')}`;
+      html += `<strong>ימי הולדת בקרוב:</strong> ${bdays.map(b => b.name).join(', ')}`;
+      speechParts.push(`${bdays.map(b => b.name).join(' ו')} חוגג${bdays.length > 1 ? 'ים' : ''} יום הולדת`);
     }
 
-    if (html.length < 60) html = '☀️ הכל שקט! אין עדכונים דחופים. יום עבודה רגוע לפניכם.';
+    if (speechParts.length === 0) {
+      html = 'הכל שקט! אין עדכונים דחופים. יום עבודה רגוע לפניכם.';
+      speechParts = ['הכל שקט, אין עדכונים דחופים'];
+    }
+
+    const speech = speechParts.join('. ');
     convState = 'idle';
-    await respond(html, 500);
+    await respond(html, speech, 500);
+    appendStarters();
   }
 
   async function flowContact() {
     convState = 'contact-q1';
-    await respond('לאיזה נושא צריך איש קשר?<br><em style="font-size:12px;opacity:0.7">יחידה, תפקיד או נושא כמו "IT", "רכש", "הון אנושי"</em>');
+    await respond(
+      'לאיזה נושא צריך איש קשר?<br><em style="font-size:12px;opacity:0.65">יחידה, תפקיד, או נושא כמו "IT", "רכש", "הון אנושי"</em>',
+      'לאיזה נושא צריך איש קשר'
+    );
   }
 
   async function doContact(query) {
     const d = window.PortalData || {};
     const q = query.toLowerCase();
     const results = (d.contacts || []).filter(c =>
-      (c.unit  && c.unit.toLowerCase().includes(q)) ||
-      (c.role  && c.role.toLowerCase().includes(q)) ||
-      (c.name  && c.name.toLowerCase().includes(q))
+      (c.unit && c.unit.toLowerCase().includes(q)) ||
+      (c.role && c.role.toLowerCase().includes(q)) ||
+      (c.name && c.name.toLowerCase().includes(q))
     ).slice(0, 3);
 
     if (!results.length) {
-      await respond(`לא מצאתי תוצאות עבור "<strong>${query}</strong>". בוא נעבור לספר הטלפונים.`);
+      await respond(
+        `לא מצאתי תוצאות עבור "<strong>${query}</strong>". עוברים לספר הטלפונים.`,
+        'לא נמצא, עוברים לספר הטלפונים'
+      );
       setTimeout(() => { window.location.href = 'contacts.html'; }, 1400);
       return;
     }
-    let html = `מצאתי ${results.length} אנשי קשר:<br><br>`;
+    let html = `נמצאו ${results.length} אנשי קשר:<br><br>`;
     results.forEach(c => {
-      html += `👤 <strong>${c.name}</strong> — ${c.role}<br>`;
-      html += `&nbsp;&nbsp;📞 שלוחה ${c.ext}<br>`;
+      html += `<strong>${c.name}</strong> — ${c.role}<br>`;
+      html += `שלוחה ${c.ext}<br><br>`;
     });
-    await respond(html);
+    const speech = results.map(c => `${c.name}, ${c.role}, שלוחה ${c.ext}`).join('. ');
+    await respond(html, speech);
+    appendStarters();
   }
 
   async function flowBday() {
     convState = 'bday-q1';
-    await respond('למי תרצו לשלוח ברכה? (שם העמית/ה)');
+    await respond(
+      'למי תרצו לשלוח ברכה? (שם העמית/ה)',
+      'למי לשלוח ברכה'
+    );
   }
 
   async function doBday(name) {
     const wishes = [
-      `"${name} יקר/ה, יום הולדת שמח! שהשנה תביא לך בריאות, הצלחות ושמחה. מעריכים אותך!"`,
-      `"יום הולדת שמח ${name}! כל הצוות שמח לעבוד איתך. שתמשיכ/י לסחוף אותנו קדימה!"`,
-      `"${name}, שנה טובה! הגעת עד כאן עם כל כך הרבה עשייה. כך להמשיך!"`,
+      `"${name} יקר/ה, יום הולדת שמח! שהשנה תביא לך בריאות, הצלחות ושמחה."`,
+      `"יום הולדת שמח ${name}! כל הצוות שמח לעבוד איתך."`,
+      `"${name}, שנה טובה! כך להמשיך קדימה."`,
     ];
-    let html = 'הנה 3 ברכות לבחירה:<br><br>';
+    let html = `הנה שלוש ברכות עבור ${name}:<br><br>`;
     wishes.forEach((w, i) => { html += `<strong>${i+1}.</strong> ${w}<br><br>`; });
-    html += `<em style="font-size:12px;opacity:0.7">לחצו על כתובת המייל של ${name} בספר הטלפונים לשליחה.</em>`;
-    await respond(html, 600);
+    html += `<em style="font-size:12px;opacity:0.65">לשליחה — לחצו על המייל של ${name} בספר הטלפונים.</em>`;
+    await respond(html, `הנה שלוש ברכות עבור ${name}. בחרו אחת ושלחו במייל`);
+    appendStarters();
   }
 
-  // ── Pending action (after cross-page navigation) ─────────────────────
+  // ── Pending action (cross-page) ──────────────────────────────────────
   function executePending() {
     const action = state.pendingAction;
     if (!action) return;
     delete state.pendingAction;
     saveState(state);
-
     setTimeout(() => {
       if (!win.classList.contains('show')) openWin();
-
-      if (action.type === 'fill-req') {
-        doFillReq(action.data.desc);
-      } else if (action.type === 'search-doc') {
-        doFillSearch(action.data.query);
-      }
+      if (action.type === 'fill-req')    doFillReq(action.data.desc);
+      else if (action.type === 'search-doc') doFillSearch(action.data.query);
     }, 700);
   }
 
   async function doFillReq(desc) {
     const lower = desc.toLowerCase();
-
-    // Map description → type id
     let typeId = 'it';
-    if (lower.match(/ציוד|עט|נייר|כיסא|שולחן|הזמנה/))         typeId = 'request';
-    else if (lower.match(/תחזוקה|מזגן|חשמל|נזילה|תיקון/))      typeId = 'maintenance';
-    else if (lower.match(/אבטחה|סייבר|פרצה|גנוב/))             typeId = 'security';
-    else if (lower.match(/רכש|רישיון|תוכנה/))                   typeId = 'purchase';
-    else if (lower.match(/כוח אדם|חופשה|תנאים|שכר/))           typeId = 'hr';
+    if (lower.match(/ציוד|עט|נייר|כיסא|שולחן|הזמנה/))    typeId = 'request';
+    else if (lower.match(/תחזוקה|מזגן|חשמל|נזילה|תיקון/)) typeId = 'maintenance';
+    else if (lower.match(/אבטחה|סייבר|פרצה|גנוב/))        typeId = 'security';
+    else if (lower.match(/רכש|רישיון|תוכנה/))              typeId = 'purchase';
+    else if (lower.match(/כוח אדם|חופשה|תנאים|שכר/))      typeId = 'hr';
 
-    // Click the type card
     setTimeout(() => {
       const card = document.querySelector(`.type-card[data-id="${typeId}"]`);
       if (card) card.click();
     }, 400);
-
-    // Fill title field (step 2)
     setTimeout(() => {
       const el = document.querySelector('#f-title');
       if (el) { el.value = desc; el.dispatchEvent(new Event('input')); }
     }, 700);
-
-    // Fill details field
     setTimeout(() => {
       const el = document.querySelector('#f-desc, textarea[id*="desc"], textarea[id*="detail"]');
       if (el) { el.value = desc; el.dispatchEvent(new Event('input')); }
     }, 800);
 
-    await respond(`פתחתי לך את הטופס ומילאתי את הפרטים.<br>עברו לשלב הבא ואשרו את הבקשה! 📋`, 600);
+    await respond(
+      'פתחתי לך את הטופס ומילאתי את הפרטים.<br>עברו לשלב הבא ואשרו את הבקשה.',
+      'פתחתי את הטופס. אפשר לאשר ולשלוח',
+      600
+    );
+    appendStarters();
   }
 
   async function doFillSearch(query) {
@@ -510,15 +596,21 @@
       const el = document.querySelector('#doc-search, .hero-search input, .search-hero input');
       if (el) { el.value = query; el.dispatchEvent(new Event('input')); }
     }, 400);
-    await respond(`חיפשתי <strong>"${query}"</strong> במאגר המידע. הנה התוצאות! 📄`, 500);
+    await respond(
+      `חיפשתי <strong>"${query}"</strong> במאגר המידע. הנה התוצאות.`,
+      'הנה תוצאות החיפוש',
+      500
+    );
+    appendStarters();
   }
 
   // ── TTS ──────────────────────────────────────────────────────────────
-  function speak(html) {
+  function speakText(text) {
     if (!window.speechSynthesis) return;
-    const text = html.replace(/<[^>]+>/g, '').replace(/&[^;]+;/g, ' ').replace(/\s+/g, ' ').trim();
+    // Strip any residual HTML/entities, clean whitespace
+    const clean = text.replace(/<[^>]+>/g, '').replace(/&[^;]+;/g, ' ').replace(/\s+/g, ' ').trim();
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
+    const u = new SpeechSynthesisUtterance(clean);
     u.lang = 'he-IL'; u.rate = 1.05;
     speechSynthesis.speak(u);
   }
