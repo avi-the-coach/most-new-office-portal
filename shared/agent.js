@@ -514,30 +514,13 @@
   }
 
   async function doContact(query) {
-    const d = window.PortalData || {};
-    const q = query.toLowerCase();
-    const results = (d.contacts || []).filter(c =>
-      (c.unit && c.unit.toLowerCase().includes(q)) ||
-      (c.role && c.role.toLowerCase().includes(q)) ||
-      (c.name && c.name.toLowerCase().includes(q))
-    ).slice(0, 3);
-
-    if (!results.length) {
-      await respond(
-        `לא מצאתי תוצאות עבור "<strong>${query}</strong>". עוברים לספר הטלפונים.`,
-        'לא נמצא, עוברים לספר הטלפונים'
-      );
-      setTimeout(() => { window.location.href = 'contacts.html'; }, 1400);
-      return;
-    }
-    let html = `נמצאו ${results.length} אנשי קשר:<br><br>`;
-    results.forEach(c => {
-      html += `<strong>${c.name}</strong> — ${c.role}<br>`;
-      html += `שלוחה ${c.ext}<br><br>`;
-    });
-    const speech = results.map(c => `${c.name}, ${c.role}, שלוחה ${c.ext}`).join('. ');
-    await respond(html, speech);
-    appendStarters();
+    await respond(
+      `מחפש "<strong>${query}</strong>"... מעביר לספר הטלפונים.`,
+      'מעביר לספר הטלפונים'
+    );
+    state.pendingAction = { type: 'search-contact', data: { query } };
+    saveState(state);
+    setTimeout(() => { window.location.href = 'contacts.html'; }, 1200);
   }
 
   async function flowBday() {
@@ -568,8 +551,9 @@
     delete state.pendingAction;
     saveState(state);
     setTimeout(() => {
-      if (action.type === 'fill-req')    doFillReq(action.data.desc);
-      else if (action.type === 'search-doc') doFillSearch(action.data.query);
+      if (action.type === 'fill-req')           doFillReq(action.data.desc);
+      else if (action.type === 'search-doc')    doFillSearch(action.data.query);
+      else if (action.type === 'search-contact') doFillContact(action.data.query);
     }, 700);
   }
 
@@ -676,6 +660,25 @@
     await new Promise(r => setTimeout(r, 300));
     openWin();
     addMsg('a', `הקלדתי "<strong>${query}</strong>" — הנה התוצאות.`);
+    speakText('הנה תוצאות החיפוש');
+    appendStarters();
+  }
+
+  async function doFillContact(query) {
+    closeWin();
+    await new Promise(r => setTimeout(r, 350));
+
+    // option-1/2: #contact-search, option-3: #contactSearch
+    const el = document.querySelector('#contact-search, #contactSearch');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      await new Promise(r => setTimeout(r, 300));
+      await typeInto(el, query, 60);
+    }
+
+    await new Promise(r => setTimeout(r, 300));
+    openWin();
+    addMsg('a', `חיפשתי "<strong>${query}</strong>" — הנה התוצאות.`);
     speakText('הנה תוצאות החיפוש');
     appendStarters();
   }
